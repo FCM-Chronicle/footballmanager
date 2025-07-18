@@ -716,19 +716,22 @@ function selectTeam(teamKey) {
         playerGrowthSystem.initializePlayerGrowth();
     }
     
+    // 개인 기록 시스템 초기화 (안전하게 처리)
+    try {
+        if (typeof personalRecordsSystem !== 'undefined') {
+            personalRecordsSystem.initialize();
+        }
+    } catch (error) {
+        console.log('개인 기록 시스템 초기화 실패:', error);
+    }
+    
     // 이적 시스템 초기화
     if (typeof transferSystem !== 'undefined') {
         transferSystem.initializeTransferMarket();
     }
-
-    // 개인 기록 시스템 초기화
-    if (typeof personalRecordsSystem !== 'undefined') {
-    personalRecordsSystem.initialize();
-    }
     
     // 상대팀 설정
     setNextOpponent();
-
     
     // 로비로 이동
     showScreen('lobby');
@@ -1384,6 +1387,12 @@ function saveGame() {
     a.download = `${teamNames[gameData.selectedTeam]}_${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+
+    // saveGame 함수에 추가:
+    if (typeof personalRecordsSystem !== 'undefined') {
+    gameData.personalRecordsData = personalRecordsSystem.getSaveData();
+    }
+    
 }
 
 function loadGame(event) {
@@ -1406,6 +1415,10 @@ function loadGame(event) {
             updateDisplay();
             updateFormationDisplay();
             displayTeamPlayers();
+            // loadGame 함수에 추가:
+            if (gameData.personalRecordsData && typeof personalRecordsSystem !== 'undefined') {
+            personalRecordsSystem.loadSaveData(gameData.personalRecordsData);
+            }
             
             alert('게임을 불러왔습니다!');
         } catch (error) {
@@ -1917,3 +1930,4 @@ window.updateFormationDisplay = updateFormationDisplay;
 window.calculateTeamRating = calculateTeamRating;
 window.calculateOpponentTeamRating = calculateOpponentTeamRating;
 window.calculateTeamStrengthDifference = calculateTeamStrengthDifference;
+window.personalRecordsSystem = personalRecordsSystem;
