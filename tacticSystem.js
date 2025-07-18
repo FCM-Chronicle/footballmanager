@@ -889,14 +889,14 @@ function createGoalEvent(matchData, isUserTeam) {
 }
 
 // 개인 기록 시스템에 기록
-    if (typeof personalRecordsSystem !== 'undefined' && scorer) {
-        if (isUserTeam) {
-            personalRecordsSystem.recordGoal(scorer.name);
-            if (assister) {
-                personalRecordsSystem.recordAssist(assister.name);
-            }
-        }
-    }
+//    if (typeof personalRecordsSystem !== 'undefined' && scorer) {
+//        if (isUserTeam) {
+//            personalRecordsSystem.recordGoal(scorer.name);
+//            if (assister) {
+//                personalRecordsSystem.recordAssist(assister.name);
+//            }
+//        }
+//    }
 
 function createFoulEvent(matchData) {
     const teams = [gameData.selectedTeam, gameData.currentOpponent];
