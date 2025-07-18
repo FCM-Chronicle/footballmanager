@@ -1611,15 +1611,289 @@ window.onclick = function(event) {
     }
 }
 
+// 개인 기록 시스템 클래스
+class PersonalRecordsSystem {
+    constructor() {
+        this.playerStats = new Map(); // 선수별 통계 저장
+        this.initialized = false;
+    }
 
-// 팀 테마 적용 함수
-function applyTeamTheme(teamKey) {
-    // 기존 팀 클래스 제거
-    document.body.className = document.body.className.replace(/team-\w+/g, '');
-    
-    // 새로운 팀 클래스 추가
-    document.body.classList.add(`team-${teamKey}`);
+    // 시스템 초기화
+    initialize() {
+        if (this.initialized) return;
+        
+        // 모든 팀의 선수들 기록 초기화
+        Object.keys(teams).forEach(teamKey => {
+            teams[teamKey].forEach(player => {
+                const playerKey = `${player.name}_${teamKey}`;
+                this.playerStats.set(playerKey, {
+                    name: player.name,
+                    team: teamKey,
+                    position: player.position,
+                    rating: player.rating,
+                    goals: 0,
+                    assists: 0,
+                    adjustedRating: player.rating + (Math.random() * 0.4 - 0.2) // ±0.2 랜덤
+                });
+            });
+        });
+
+        // AI 팀들의 초기 기록 생성
+        this.generateInitialStats();
+        this.initialized = true;
+    }
+
+    // AI 팀들의 초기 기록 생성
+    generateInitialStats() {
+        Object.keys(teams).forEach(teamKey => {
+            if (teamKey === gameData.selectedTeam) return; // 유저 팀 제외
+
+            teams[teamKey].forEach(player => {
+                const playerKey = `${player.name}_${teamKey}`;
+                const stats = this.playerStats.get(playerKey);
+                
+                if (stats) {
+                    // 능력치와 포지션에 따른 기초 기록 생성
+                    const baseGoals = this.calculateBaseGoals(player);
+                    const baseAssists = this.calculateBaseAssists(player);
+                    
+                    stats.goals = baseGoals;
+                    stats.assists = baseAssists;
+                }
+            });
+        });
+    }
+
+    // 기본 골 수 계산
+    calculateBaseGoals(player) {
+        let baseGoals = 0;
+        const ratingFactor = (player.rating - 70) / 10; // 70 기준으로 정규화
+        
+        if (player.position === 'FW') {
+            baseGoals = Math.max(0, Math.floor(ratingFactor * 3 + Math.random() * 4)); // 0~10골 정도
+        } else if (player.position === 'MF') {
+            baseGoals = Math.max(0, Math.floor(ratingFactor * 1.5 + Math.random() * 3)); // 0~6골 정도
+        } else if (player.position === 'DF') {
+            baseGoals = Math.max(0, Math.floor(ratingFactor * 0.3 + Math.random() * 1)); // 0~2골 정도
+        }
+        
+        return baseGoals;
+    }
+
+    // 기본 어시스트 수 계산
+    calculateBaseAssists(player) {
+        let baseAssists = 0;
+        const ratingFactor = (player.rating - 70) / 10;
+        
+        if (player.position === 'FW') {
+            baseAssists = Math.max(0, Math.floor(ratingFactor * 2 + Math.random() * 3)); // 0~8어시 정도
+        } else if (player.position === 'MF') {
+            baseAssists = Math.max(0, Math.floor(ratingFactor * 2.5 + Math.random() * 4)); // 0~10어시 정도
+        } else if (player.position === 'DF') {
+            baseAssists = Math.max(0, Math.floor(ratingFactor * 0.5 + Math.random() * 1)); // 0~2어시 정도
+        }
+        
+        return baseAssists;
+    }
+
+    // 유저 팀 선수 골 기록
+    recordGoal(playerName) {
+        const playerKey = `${playerName}_${gameData.selectedTeam}`;
+        const stats = this.playerStats.get(playerKey);
+        if (stats) {
+            stats.goals++;
+        }
+    }
+
+    // 유저 팀 선수 어시스트 기록
+    recordAssist(playerName) {
+        const playerKey = `${playerName}_${gameData.selectedTeam}`;
+        const stats = this.playerStats.get(playerKey);
+        if (stats) {
+            stats.assists++;
+        }
+    }
+
+    // AI 팀들의 라운드별 기록 업데이트
+    updateAIStats() {
+        Object.keys(teams).forEach(teamKey => {
+            if (teamKey === gameData.selectedTeam) return;
+
+            teams[teamKey].forEach(player => {
+                const playerKey = `${player.name}_${teamKey}`;
+                const stats = this.playerStats.get(playerKey);
+                
+                if (stats) {
+                    // 골 기록 업데이트 확률
+                    const goalChance = this.calculateGoalChance(player);
+                    if (Math.random() < goalChance) {
+                        stats.goals++;
+                    }
+
+                    // 어시스트 기록 업데이트 확률
+                    const assistChance = this.calculateAssistChance(player);
+                    if (Math.random() < assistChance) {
+                        stats.assists++;
+                    }
+                }
+            });
+        });
+    }
+
+    // AI 선수 골 확률 계산
+    calculateGoalChance(player) {
+        const baseChance = (player.rating - 70) / 1000; // 기본 0.01~0.03 정도
+        
+        if (player.position === 'FW') {
+            return Math.min(0.08, baseChance * 2); // 최대 8%
+        } else if (player.position === 'MF') {
+            return Math.min(0.03, baseChance * 0.6); // 최대 3%
+        } else {
+            return Math.min(0.01, baseChance * 0.2); // 최대 1%
+        }
+    }
+
+    // AI 선수 어시스트 확률 계산
+    calculateAssistChance(player) {
+        const baseChance = (player.rating - 70) / 1000;
+        
+        if (player.position === 'FW') {
+            return Math.min(0.06, baseChance * 1.5); // 최대 6%
+        } else if (player.position === 'MF') {
+            return Math.min(0.08, baseChance * 2); // 최대 8%
+        } else {
+            return Math.min(0.02, baseChance * 0.3); // 최대 2%
+        }
+    }
+
+    // 득점왕 순위 가져오기 (TOP 5)
+    getTopScorers() {
+        const allStats = Array.from(this.playerStats.values());
+        
+        // 오버롤 + 랜덤요소로 정렬하되, 실제로는 골 수가 우선
+        return allStats
+            .filter(stat => stat.goals > 0) // 골이 있는 선수만
+            .sort((a, b) => {
+                // 골 수가 같으면 조정된 능력치로 비교
+                if (b.goals === a.goals) {
+                    return b.adjustedRating - a.adjustedRating;
+                }
+                return b.goals - a.goals;
+            })
+            .slice(0, 5);
+    }
+
+    // 도움왕 순위 가져오기 (TOP 5)
+    getTopAssisters() {
+        const allStats = Array.from(this.playerStats.values());
+        
+        return allStats
+            .filter(stat => stat.assists > 0) // 어시스트가 있는 선수만
+            .sort((a, b) => {
+                // 어시스트 수가 같으면 조정된 능력치로 비교
+                if (b.assists === a.assists) {
+                    return b.adjustedRating - a.adjustedRating;
+                }
+                return b.assists - a.assists;
+            })
+            .slice(0, 5);
+    }
+
+    // 기록 표시
+    displayRecords() {
+        this.displayTopScorers();
+        this.displayTopAssisters();
+    }
+
+    // 득점왕 표시
+    displayTopScorers() {
+        const container = document.getElementById('topScorers');
+        if (!container) return;
+
+        const topScorers = this.getTopScorers();
+        container.innerHTML = '';
+
+        if (topScorers.length === 0) {
+            container.innerHTML = '<p style="text-align: center; opacity: 0.7;">아직 득점 기록이 없습니다.</p>';
+            return;
+        }
+
+        topScorers.forEach((player, index) => {
+            const isUserPlayer = player.team === gameData.selectedTeam;
+            const rankingItem = document.createElement('div');
+            rankingItem.className = `ranking-item ${isUserPlayer ? 'user-player' : ''}`;
+            
+            rankingItem.innerHTML = `
+                <div class="player-rank">${index + 1}</div>
+                <div class="player-info">
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-team">${teamNames[player.team] || player.team}</div>
+                </div>
+                <div class="player-stats">${player.goals}골</div>
+            `;
+            
+            container.appendChild(rankingItem);
+        });
+    }
+
+    // 도움왕 표시
+    displayTopAssisters() {
+        const container = document.getElementById('topAssisters');
+        if (!container) return;
+
+        const topAssisters = this.getTopAssisters();
+        container.innerHTML = '';
+
+        if (topAssisters.length === 0) {
+            container.innerHTML = '<p style="text-align: center; opacity: 0.7;">아직 어시스트 기록이 없습니다.</p>';
+            return;
+        }
+
+        topAssisters.forEach((player, index) => {
+            const isUserPlayer = player.team === gameData.selectedTeam;
+            const rankingItem = document.createElement('div');
+            rankingItem.className = `ranking-item ${isUserPlayer ? 'user-player' : ''}`;
+            
+            rankingItem.innerHTML = `
+                <div class="player-rank">${index + 1}</div>
+                <div class="player-info">
+                    <div class="player-name">${player.name}</div>
+                    <div class="player-team">${teamNames[player.team] || player.team}</div>
+                </div>
+                <div class="player-stats">${player.assists}도움</div>
+            `;
+            
+            container.appendChild(rankingItem);
+        });
+    }
+
+    // 저장 데이터 준비
+    getSaveData() {
+        const saveData = {};
+        this.playerStats.forEach((value, key) => {
+            saveData[key] = value;
+        });
+        return {
+            playerStats: saveData,
+            initialized: this.initialized
+        };
+    }
+
+    // 저장 데이터 로드
+    loadSaveData(saveData) {
+        this.playerStats.clear();
+        if (saveData.playerStats) {
+            Object.entries(saveData.playerStats).forEach(([key, value]) => {
+                this.playerStats.set(key, value);
+            });
+        }
+        this.initialized = saveData.initialized || false;
+    }
 }
+
+// 전역 개인 기록 시스템 인스턴스
+const personalRecordsSystem = new PersonalRecordsSystem();
+
 
 // 외부에서 호출할 수 있는 함수들
 window.gameData = gameData;
