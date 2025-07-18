@@ -1387,9 +1387,9 @@ function saveGame() {
     URL.revokeObjectURL(url);
 
     // saveGame 함수에 추가:
-    if (typeof personalRecordsSystem !== 'undefined') {
-    gameData.personalRecordsData = personalRecordsSystem.getSaveData();
-    }
+//    if (typeof personalRecordsSystem !== 'undefined') {
+   // gameData.personalRecordsData = personalRecordsSystem.getSaveData();
+ //   }
     
 }
 
@@ -1414,9 +1414,9 @@ function loadGame(event) {
             updateFormationDisplay();
             displayTeamPlayers();
             // loadGame 함수에 추가:
-            if (gameData.personalRecordsData && typeof personalRecordsSystem !== 'undefined') {
-            personalRecordsSystem.loadSaveData(gameData.personalRecordsData);
-            }
+         //   if (gameData.personalRecordsData && typeof personalRecordsSystem !== 'undefined') {
+          //  personalRecordsSystem.loadSaveData(gameData.personalRecordsData);
+           // }
             
             alert('게임을 불러왔습니다!');
         } catch (error) {
