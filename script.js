@@ -717,11 +717,11 @@ function selectTeam(teamKey) {
     }
     
     // 개인 기록 시스템 초기화 - 임시 비활성화
-    /*
-    if (typeof personalRecordsSystem !== 'undefined') {
-        personalRecordsSystem.initialize();
-    }
-    */
+    //
+    //if (typeof personalRecordsSystem !== 'undefined') {
+   //     personalRecordsSystem.initialize();
+  //  }
+    
     
     // 이적 시스템 초기화
     if (typeof transferSystem !== 'undefined') {
