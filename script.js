@@ -717,13 +717,13 @@ function selectTeam(teamKey) {
     }
     
     // 개인 기록 시스템 초기화 (안전하게 처리)
-    try {
+    /*try {
         if (typeof personalRecordsSystem !== 'undefined') {
             personalRecordsSystem.initialize();
         }
     } catch (error) {
         console.log('개인 기록 시스템 초기화 실패:', error);
-    }
+    }    */
     
     // 이적 시스템 초기화
     if (typeof transferSystem !== 'undefined') {
