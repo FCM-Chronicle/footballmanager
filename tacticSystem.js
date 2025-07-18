@@ -639,6 +639,70 @@ function createGoalEvent(matchData, isUserTeam) {
         }
     }
 
+    // 어시스트 선수 결정 (85% 확률로 어시스트 존재)
+    let assister = null;
+    const hasAssist = Math.random() < 0.85; // 85% 확률
+    
+    if (hasAssist && scorer) {
+        if (isUserTeam) {
+            // 사용자 팀에서 어시스트 선수 선택 - 포지션별 확률 (FW: 50%, MF: 45%, DF: 5%)
+            const squad = gameData.squad;
+            const possibleAssisters = [];
+            
+            // 공격수 (50% 확률) - 득점자 제외
+            squad.fw.forEach(player => {
+                if (player && player.name !== scorer.name) {
+                    for (let i = 0; i < 50; i++) possibleAssisters.push(player);
+                }
+            });
+            
+            // 미드필더 (45% 확률) - 득점자 제외
+            squad.mf.forEach(player => {
+                if (player && player.name !== scorer.name) {
+                    for (let i = 0; i < 45; i++) possibleAssisters.push(player);
+                }
+            });
+            
+            // 수비수 (5% 확률) - 득점자 제외
+            squad.df.forEach(player => {
+                if (player && player.name !== scorer.name) {
+                    for (let i = 0; i < 5; i++) possibleAssisters.push(player);
+                }
+            });
+            
+            if (possibleAssisters.length > 0) {
+                assister = possibleAssisters[Math.floor(Math.random() * possibleAssisters.length)];
+            }
+        } else {
+            // 상대 팀에서 어시스트 선수 선택
+            const teamPlayers = teams[team];
+            const forwards = teamPlayers.filter(p => p.position === 'FW' && p.name !== scorer.name).sort((a, b) => b.rating - a.rating);
+            const midfielders = teamPlayers.filter(p => p.position === 'MF' && p.name !== scorer.name).sort((a, b) => b.rating - a.rating);
+            const defenders = teamPlayers.filter(p => p.position === 'DF' && p.name !== scorer.name).sort((a, b) => b.rating - a.rating);
+            
+            const possibleAssisters = [];
+            
+            // 공격수 (50% 확률) - 상위 3명만, 득점자 제외
+            forwards.slice(0, 3).forEach(player => {
+                for (let i = 0; i < 50; i++) possibleAssisters.push(player);
+            });
+            
+            // 미드필더 (45% 확률) - 상위 3명만, 득점자 제외
+            midfielders.slice(0, 3).forEach(player => {
+                for (let i = 0; i < 45; i++) possibleAssisters.push(player);
+            });
+            
+            // 수비수 (5% 확률) - 상위 4명만, 득점자 제외
+            defenders.slice(0, 4).forEach(player => {
+                for (let i = 0; i < 5; i++) possibleAssisters.push(player);
+            });
+            
+            if (possibleAssisters.length > 0) {
+                assister = possibleAssisters[Math.floor(Math.random() * possibleAssisters.length)];
+            }
+        }
+    }
+
     // 점수 업데이트
     if (isUserTeam) {
         matchData.homeScore++;
@@ -705,12 +769,122 @@ function createGoalEvent(matchData, isUserTeam) {
         }
     }
 
+    // 다양한 어시스트 메시지 배열
+    const assistMessages = [
+        // FW 어시스트 메시지 (공격적, 개인기 중심)
+        "의 화려한 드리블 이후 완벽한 패스!",
+        "의 감각적인 터치로 골문을 열어준다!",
+        "의 환상적인 개인기 후 찬스 메이킹!",
+        "의 빠른 발놀림으로 수비를 농락한 뒤 어시스트!",
+        "의 침착한 마무리 패스가 골로 연결됐다!",
+        "의 눈부신 볼 컨트롤 후 결정적 패스!",
+        "의 순간적인 판단력이 빛난 어시스트!",
+        "의 기습적인 돌파 후 완벽한 패스!",
+        "의 예술적인 터치가 골을 만들어냈다!",
+        "의 창조적인 플레이로 골 기회 창출!",
+        
+        // MF 어시스트 메시지 (패스, 시야, 게임메이킹 중심)
+        "의 감각적인 아웃프런트 패스!",
+        "의 환상적인 시야로 완벽한 찬스 메이킹!",
+        "의 정교한 스루패스가 수비라인을 가른다!",
+        "의 킬패스가 골문을 열어젖혔다!",
+        "의 날카로운 침투패스!",
+        "의 절묘한 타이밍의 패스!",
+        "의 예측불허 패스가 골로 이어졌다!",
+        "의 완벽한 게임 리딩으로 만든 골!",
+        "의 천재적인 발상의 전환으로 어시스트!",
+        "의 마에스트로다운 패스 워크!",
+        "의 창의적인 백힐 패스!",
+        "의 로빙 패스가 수비를 무력화시켰다!",
+        "의 순간적인 플레이메이킹!",
+        "의 정밀한 장거리 패스!",
+        
+        // DF 어시스트 메시지 (장거리, 크로스, 의외성 중심)
+        "의 놀라운 장거리 패스!",
+        "의 예상치 못한 오버래핑으로 크로스!",
+        "의 기습적인 측면 돌파 후 센터링!",
+        "의 롱볼이 완벽하게 연결됐다!",
+        "의 의외의 공격 가담으로 어시스트!",
+        "의 정확한 크로스가 골로 이어졌다!",
+        "의 서프라이즈 어시스트!",
+        "의 긴 패스가 상대 수비를 뚫었다!",
+        "의 깜짝 공격 가담으로 골 어시스트!",
+        "의 절묘한 타이밍의 중거리 패스!"
+    ];
+
+    // 어시스트 선수의 포지션에 따라 적절한 메시지 선택
+    function getAssistMessage(assisterPosition) {
+        let messagePool = [];
+        
+        if (assisterPosition === 'FW') {
+            // FW 메시지 (0-9번 인덱스)
+            messagePool = assistMessages.slice(0, 10);
+        } else if (assisterPosition === 'MF') {
+            // MF 메시지 (10-23번 인덱스)  
+            messagePool = assistMessages.slice(10, 24);
+        } else if (assisterPosition === 'DF') {
+            // DF 메시지 (24-33번 인덱스)
+            messagePool = assistMessages.slice(24, 34);
+        } else {
+            // 기본 메시지
+            messagePool = assistMessages.slice(10, 20);
+        }
+        
+        return messagePool[Math.floor(Math.random() * messagePool.length)];
+    }
+
+    // 골 완성 메시지 배열
+    const goalFinishMessages = [
+        "의 완벽한 골!",
+        "의 환상적인 골!",
+        "의 멋진 골!",
+        "의 강력한 골!",
+        "의 정확한 골!",
+        "의 침착한 골!",
+        "의 기막힌 골!",
+        "의 예술적인 골!",
+        "의 완성도 높은 골!",
+        "의 절묘한 골!",
+        "가 골네트를 흔들었다!",
+        "가 골문을 가른다!",
+        "의 마무리가 골로 이어졌다!",
+        "가 골을 만들어냈다!",
+        "의 슛이 골문을 찾았다!"
+    ];
+
+    // 어시스트 정보를 포함한 골 메시지 생성
+    let goalDescription;
+    if (assister) {
+        const assistMessage = getAssistMessage(assister.position);
+        const goalFinish = goalFinishMessages[Math.floor(Math.random() * goalFinishMessages.length)];
+        
+        goalDescription = `⚽ ${teamName}의 ${assister.name}(${assister.rating})${assistMessage} ${scorer.name}(${scorer.rating})${goalFinish}${specialMessage}`;
+    } else {
+        // 어시스트 없을 때도 다양한 골 메시지
+        const soloGoalMessages = [
+            "의 개인기가 빛난 골!",
+            "의 독주골!",
+            "가 혼자서 만들어낸 골!",
+            "의 단독 돌파골!",
+            "의 완벽한 개인플레이!",
+            "의 기막힌 개인기!",
+            "가 혼자 힘으로 골을 만들었다!",
+            "의 솔로런이 골로 이어졌다!",
+            "의 순간적인 판단력이 만든 골!",
+            "의 클래스가 돋보인 골!"
+        ];
+        
+        const soloMessage = soloGoalMessages[Math.floor(Math.random() * soloGoalMessages.length)];
+        goalDescription = `⚽ ${teamName}의 ${scorer ? scorer.name : '선수'}(${scorer ? scorer.rating : '?'})${soloMessage}${specialMessage}`;
+    }
+
     return {
         minute: matchData.minute,
         type: 'goal',
         team: teamName,
         scorer: scorer ? scorer.name : '선수',
-        description: `⚽ ${teamName}의 ${scorer ? scorer.name : '선수'}(${scorer ? scorer.rating : '?'})가 골을 넣었습니다!${specialMessage}`
+        assister: assister ? assister.name : null,
+        description: goalDescription
     };
 }
 
