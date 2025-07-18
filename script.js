@@ -808,10 +808,10 @@ function showTab(tabName) {
         case 'sponsor':
             displaySponsors();
             break;
-        case 'records':
-        if (typeof personalRecordsSystem !== 'undefined') {
-        personalRecordsSystem.displayRecords();
-    }
+      //  case 'records':
+       / if (typeof personalRecordsSystem !== 'undefined') {
+     /   personalRecordsSystem.displayRecords();
+   / }
     break;
     }
 }
