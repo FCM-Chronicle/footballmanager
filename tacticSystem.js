@@ -1097,6 +1097,11 @@ function endMatch(matchData) {
     
     // AI 팀들 경기 시뮬레이션
     simulateOtherMatches();
+
+    // AI 팀 기록 업데이트
+    if (typeof personalRecordsSystem !== 'undefined') {
+    personalRecordsSystem.updateAIStats();
+    }
 }
 
 function updateLeagueData(matchData, points) {
