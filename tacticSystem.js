@@ -888,6 +888,16 @@ function createGoalEvent(matchData, isUserTeam) {
     };
 }
 
+// 개인 기록 시스템에 기록
+    if (typeof personalRecordsSystem !== 'undefined' && scorer) {
+        if (isUserTeam) {
+            personalRecordsSystem.recordGoal(scorer.name);
+            if (assister) {
+                personalRecordsSystem.recordAssist(assister.name);
+            }
+        }
+    }
+
 function createFoulEvent(matchData) {
     const teams = [gameData.selectedTeam, gameData.currentOpponent];
     const team = teams[Math.floor(Math.random() * teams.length)];
@@ -1498,6 +1508,7 @@ function endSeason() {
     
     alert(`시즌 종료!\n최종 순위: ${userPosition}위 (${achievement})\n보상: ${reward}억원`);
 }
+
 
 // 전역으로 함수들 노출
 window.TacticSystem = TacticSystem;
