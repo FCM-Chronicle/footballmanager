@@ -720,9 +720,15 @@ function selectTeam(teamKey) {
     if (typeof transferSystem !== 'undefined') {
         transferSystem.initializeTransferMarket();
     }
+
+    // 개인 기록 시스템 초기화
+    if (typeof personalRecordsSystem !== 'undefined') {
+    personalRecordsSystem.initialize();
+    }
     
     // 상대팀 설정
     setNextOpponent();
+
     
     // 로비로 이동
     showScreen('lobby');
@@ -801,6 +807,11 @@ function showTab(tabName) {
         case 'sponsor':
             displaySponsors();
             break;
+        case 'records':
+        if (typeof personalRecordsSystem !== 'undefined') {
+        personalRecordsSystem.displayRecords();
+    }
+    break;
     }
 }
 
