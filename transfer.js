@@ -7,21 +7,21 @@ class TransferSystem {
         
         // 타 리그 선수들
         this.extraPlayers = [
-            { name: "V.죄케레스", position: "FW", rating: 85, age: 25, team: "외부리그" },
+            { name: "V.죄케레스", position: "FW", rating: 85, age: 26, team: "외부리그" },
             { name: "주앙 칸셀루", position: "DF", rating: 82, age: 31, team: "외부리그" },
             { name: "L.토레이라", position: "MF", rating: 85, age: 27, team: "외부리그" },
             { name: "K.나카무라", position: "MF", rating: 80, age: 23, team: "외부리그" },
             { name: "R.산체스", position: "GK", rating: 84, age: 29, team: "외부리그" },
-            { name: "C.호날두", position: "FW", rating: 93, age: 40, team: "외부리그" },
+            { name: "C.호날두", position: "FW", rating: 86, age: 40, team: "외부리그" },
             { name: "사디오 마네", position: "FW", rating: 83, age: 33, team: "외부리그" },
             { name: "은골로 캉테", position: "MF", rating: 84, age: 34, team: "외부리그" },
-            { name: "리오넬 메시", position: "FW", rating: 93, age: 37, team: "외부리그" },
-            { name: "음뵈모", position: "FW", rating: 87, age: 26, team: "외부리그" },
-            { name: "벤제마", position: "FW", rating: 83, age: 37, team: "외부리그" },
-            { name: "포그바", position: "FW", rating: 80, age: 32, team: "외부리그" },
-            { name: "델레 알리", position: "MF", rating: 79, age: 29, team: "외부리그" },
-            { name: "부츠케츠", position: "MF", rating: 83, age: 36, team: "외부리그" },
-            { name: "라포르트", position: "DF", rating: 83, age: 31, team: "외부리그" }
+            { name: "리오넬 메시", position: "FW", rating: 87, age: 37, team: "외부리그" },
+            { name: "라포르트", position: "DF", rating: 83, age: 31, team: "외부리그" },
+            { name: "A.그리즈만", position: "FW", rating: 85, age: 33, team: "외부리그" },
+            { name: "카세미루", position: "MF", rating: 84, age: 32, team: "외부리그" },
+            { name: "T.크루스", position: "MF", rating: 82, age: 30, team: "외부리그" },
+            { name: "파울로 디발라", position: "FW", rating: 83, age: 31, team: "외부리그" },
+            { name: "산초", position: "FW", rating: 81, age: 24, team: "외부리그" }
         ];
     }
 
@@ -61,46 +61,44 @@ class TransferSystem {
         this.shuffleTransferMarket();
     }
 
-   // 선수 가격 계산 함수 수정 (기존 calculatePlayerPrice 함수를 이것으로 교체)
-calculatePlayerPrice(player) {
-    let price = this.basePrice;
-    
-    // 능력치에 따른 가격 조정
-    const ratingMultiplier = Math.pow(player.rating / 70, 2.5);
-    price *= ratingMultiplier;
-    
-    // 나이에 따른 가격 조정
-    let ageMultiplier = 1;
-    if (player.age <= 20) {
-        ageMultiplier = 1.3; // 젊은 선수는 30% 비싸게
-    } else if (player.age <= 25) {
-        ageMultiplier = 1.2; // 25세 이하는 20% 비싸게
-    } else if (player.age >= 45) {
-        ageMultiplier = 2.1; // 45세 이상은 3.5배 (레전드 보정)
-    } else if (player.age >= 35) {
-        ageMultiplier = 0.8; // 35세 이상은 60%
-    } else if (player.age >= 30) {
-        ageMultiplier = 0.8; // 30세 이상은 80%
+    // 선수 가격 계산
+    calculatePlayerPrice(player) {
+        let price = this.basePrice;
+        
+        // 능력치에 따른 가격 조정
+        const ratingMultiplier = Math.pow(player.rating / 70, 2.5);
+        price *= ratingMultiplier;
+        
+        // 나이에 따른 가격 조정
+        let ageMultiplier = 1;
+        if (player.age <= 20) {
+            ageMultiplier = 1.3; // 젊은 선수는 30% 비싸게
+        } else if (player.age <= 25) {
+            ageMultiplier = 1.1; // 25세 이하는 10% 비싸게
+        } else if (player.age >= 30) {
+            ageMultiplier = 1; // 30세 이상은 1배
+        } else if (player.age >= 35) {
+            ageMultiplier = 0.8; // 35세 이상은 20% 싸게
+        }
+        
+        price *= ageMultiplier;
+        
+        // 포지션에 따른 가격 조정
+        const positionMultiplier = {
+            'GK': 1.0,
+            'DF': 1.0,
+            'MF': 1.1,
+            'FW': 1.3
+        };
+        
+        price *= positionMultiplier[player.position] || 1;
+        
+        // 랜덤 요소 추가 (85% ~ 150%)
+        const randomFactor = 0.85 + Math.random() * 0.65;
+        price *= randomFactor;
+        
+        return Math.round(price);
     }
-    
-    price *= ageMultiplier;
-    
-    // 포지션에 따른 가격 조정
-    const positionMultiplier = {
-        'GK': 1,
-        'DF': 1,
-        'MF': 1,
-        'FW': 1.2
-    };
-    
-    price *= positionMultiplier[player.position] || 1;
-    
-    // 랜덤 요소 추가 (90% ~ 150%)
-    const randomFactor = 0.9 + Math.random() * 0.7;
-    price *= randomFactor;
-    
-    return Math.round(price);
-}
 
     // 이적 시장 섞기
     shuffleTransferMarket() {
@@ -140,6 +138,13 @@ calculatePlayerPrice(player) {
         if (filters.maxAge) {
             filteredPlayers = filteredPlayers.filter(player => 
                 player.age <= filters.maxAge
+            );
+        }
+
+        // 최대 가격 필터
+        if (filters.maxPrice) {
+            filteredPlayers = filteredPlayers.filter(player => 
+                player.price <= filters.maxPrice
             );
         }
         
@@ -183,6 +188,11 @@ calculatePlayerPrice(player) {
                 originalTeamPlayers.splice(playerIndex, 1);
             }
         }
+
+        // SNS에 이적 소식 게시
+        if (typeof updateSNSAfterTransfer === 'function') {
+            updateSNSAfterTransfer(player.name, player.originalTeam, gameData.selectedTeam, player.price);
+        }
         
         return { 
             success: true, 
@@ -211,37 +221,20 @@ calculatePlayerPrice(player) {
         // 이적료 받기
         gameData.teamMoney += transferFee;
         
-        // 무작위 팀으로 이적시키기
-        const availableTeams = Object.keys(teams).filter(team => team !== gameData.selectedTeam);
-        if (availableTeams.length > 0) {
-            const randomTeam = availableTeams[Math.floor(Math.random() * availableTeams.length)];
-            
-            // 선수를 무작위 팀에 추가
-            teams[randomTeam].push({
-                name: player.name,
-                position: player.position,
-                rating: player.rating,
-                age: player.age
-            });
-            
-            return { 
-                success: true, 
-                message: `${player.name}을(를) 방출했습니다. ${teamNames[randomTeam]}로 이적했습니다.${transferFee > 0 ? ` (이적료: ${transferFee}억)` : ''}`
-            };
-        } else {
-            // 다른 팀이 없을 경우 이적 시장에 추가
+        // 이적 시장에 추가 (자유계약인 경우)
+        if (transferFee === 0) {
             this.transferMarket.push({
                 ...player,
-                originalTeam: "외부리그",
+                originalTeam: gameData.selectedTeam,
                 price: Math.round(this.calculatePlayerPrice(player) * 0.7), // 70% 가격으로
                 daysOnMarket: 0
             });
-            
-            return { 
-                success: true, 
-                message: `${player.name}을(를) 방출했습니다. 외부리그로 이적했습니다.${transferFee > 0 ? ` (이적료: ${transferFee}억)` : ''}`
-            };
         }
+        
+        return { 
+            success: true, 
+            message: `${player.name}을(를) 방출했습니다.${transferFee > 0 ? ` (이적료: ${transferFee}억)` : ''}`
+        };
     }
 
     // 스쿼드에서 선수 제거
@@ -298,6 +291,12 @@ calculatePlayerPrice(player) {
             
             teams[buyingTeam].push(transferCandidate);
             
+            // SNS에 AI 이적 소식 게시
+            if (typeof updateSNSAfterTransfer === 'function') {
+                const transferFee = this.calculatePlayerPrice(transferCandidate);
+                updateSNSAfterTransfer(transferCandidate.name, sellingTeam, buyingTeam, transferFee);
+            }
+            
             console.log(`AI 이적: ${transferCandidate.name}이(가) ${teamNames[sellingTeam]}에서 ${teamNames[buyingTeam]}로 이적했습니다.`);
         }
     }
@@ -313,8 +312,31 @@ calculatePlayerPrice(player) {
                 player.price = Math.round(player.price * 0.95);
             }
             
-            // 60일 이상이면 시장에서 제거 (다른 팀으로 이적했다고 가정)
-            if (player.daysOnMarket > 60 && Math.random() < 0.1) {
+            // 60일 이상이면 시장에서 제거 (80%는 팀에 복귀, 20%는 다른 팀으로 이적)
+            if (player.daysOnMarket > 60) {
+                if (Math.random() < 0.8 && player.originalTeam !== "외부리그") {
+                    // 원래 팀으로 복귀
+                    teams[player.originalTeam].push({
+                        name: player.name,
+                        position: player.position,
+                        rating: player.rating,
+                        age: player.age
+                    });
+                } else {
+                    // 20%는 다른 팀으로 이적
+                    const availableTeams = Object.keys(teams).filter(team => 
+                        team !== gameData.selectedTeam && team !== player.originalTeam
+                    );
+                    if (availableTeams.length > 0) {
+                        const newTeam = availableTeams[Math.floor(Math.random() * availableTeams.length)];
+                        teams[newTeam].push({
+                            name: player.name,
+                            position: player.position,
+                            rating: player.rating,
+                            age: player.age
+                        });
+                    }
+                }
                 player.daysOnMarket = -1; // 제거 표시
             }
         });
@@ -358,11 +380,20 @@ calculatePlayerPrice(player) {
         }
     }
 
-    // 이적 시장 표시용 데이터 가져오기
+    // 이적 시장 표시용 데이터 가져오기 (20명 제한)
     getTransferMarketDisplay(limit = 20) {
         return this.transferMarket
             .sort((a, b) => b.rating - a.rating)
             .slice(0, limit);
+    }
+
+    // 내 팀 선수 목록 가져오기 (방출용)
+    getMyTeamPlayers() {
+        if (!gameData.selectedTeam) return [];
+        return teams[gameData.selectedTeam].map(player => ({
+            ...player,
+            estimatedPrice: Math.round(this.calculatePlayerPrice(player) * 0.8) // 80% 가격으로 판매
+        }));
     }
 
     // 선수 계약 연장 (추후 구현)
@@ -396,17 +427,69 @@ function initializeTransferMarket() {
 
 // 이적 화면 로드
 function loadTransferScreen() {
+    const transferContent = document.getElementById('transferContent');
+    
+    let html = `
+        <div class="transfer-container">
+            <div class="transfer-header">
+                <h3>💰 이적시장</h3>
+                <div class="transfer-info">
+                    <span>보유 자금: ${gameData.teamMoney}억</span>
+                    <span>현재 선수: ${teams[gameData.selectedTeam]?.length || 0}/30명</span>
+                </div>
+            </div>
+
+            <!-- 검색 필터 -->
+            <div class="transfer-search">
+                <h4>선수 검색</h4>
+                <div class="search-row">
+                    <input type="text" id="nameSearch" placeholder="선수 이름 검색" class="search-input">
+                    <select id="positionFilter" class="search-select">
+                        <option value="">모든 포지션</option>
+                        <option value="GK">골키퍼</option>
+                        <option value="DF">수비수</option>
+                        <option value="MF">미드필더</option>
+                        <option value="FW">공격수</option>
+                    </select>
+                    <input type="number" id="minRating" placeholder="최소 능력치" class="search-input" min="50" max="99">
+                    <input type="number" id="maxAge" placeholder="최대 나이" class="search-input" min="16" max="45">
+                    <input type="number" id="maxPrice" placeholder="최대 가격(억)" class="search-input" min="1">
+                    <button onclick="searchPlayers()" class="search-btn">검색</button>
+                    <button onclick="resetSearch()" class="reset-btn">초기화</button>
+                </div>
+            </div>
+
+            <!-- 이적 가능 선수 목록 -->
+            <div class="transfer-players-section">
+                <h4>이적 가능 선수 (최대 20명 표시)</h4>
+                <div id="transferPlayers" class="transfer-players-grid">
+                </div>
+            </div>
+
+            <!-- 내 팀 선수 관리 -->
+            <div class="my-team-section">
+                <h4>내 팀 선수 관리</h4>
+                <div id="myTeamPlayers" class="my-team-players-grid">
+                </div>
+            </div>
+        </div>
+    `;
+
+    transferContent.innerHTML = html;
     displayTransferPlayers();
+    displayMyTeamPlayers();
 }
 
 // 이적 가능 선수 표시
 function displayTransferPlayers() {
     const container = document.getElementById('transferPlayers');
+    if (!container) return;
+    
     container.innerHTML = '';
-    const transferPlayers = transferSystem.getTransferMarketDisplay();
+    const transferPlayers = transferSystem.getTransferMarketDisplay(20); // 20명 제한
 
     if (transferPlayers.length === 0) {
-        container.innerHTML = '<p>현재 이적 가능한 선수가 없습니다.</p>';
+        container.innerHTML = '<p class="no-data">현재 이적 가능한 선수가 없습니다.</p>';
         return;
     }
 
@@ -418,41 +501,132 @@ function displayTransferPlayers() {
             "외부리그" : teamNames[player.originalTeam];
         
         playerCard.innerHTML = `
-            <div class="player-name">${player.name}</div>
-            <div class="player-position">${player.position}</div>
-            <div class="player-rating">능력치: ${player.rating}</div>
-            <div class="player-age">나이: ${player.age}</div>
-            <div class="player-team">소속: ${teamInfo}</div>
-            <div class="transfer-price">${player.price}억</div>
-            <div class="market-days">시장 ${player.daysOnMarket}일째</div>
+            <div class="player-header">
+                <div class="player-name">${player.name}</div>
+                <div class="player-position-badge ${player.position.toLowerCase()}">${player.position}</div>
+            </div>
+            <div class="player-info">
+                <div class="player-rating">능력치: <strong>${player.rating}</strong></div>
+                <div class="player-age">나이: ${player.age}세</div>
+                <div class="player-team">소속: ${teamInfo}</div>
+                <div class="market-days">시장 ${player.daysOnMarket}일째</div>
+            </div>
+            <div class="transfer-price-section">
+                <div class="transfer-price">${player.price}억</div>
+                <button onclick="buyPlayer(${JSON.stringify(player).replace(/"/g, '&quot;')})" 
+                        class="buy-btn ${gameData.teamMoney >= player.price ? '' : 'disabled'}"
+                        ${gameData.teamMoney >= player.price ? '' : 'disabled'}>
+                    ${gameData.teamMoney >= player.price ? '영입하기' : '자금부족'}
+                </button>
+            </div>
         `;
-        
-        playerCard.addEventListener('click', () => {
-            const result = transferSystem.signPlayer(player);
-            
-            if (result.success) {
-                gameData.teamMoney = Math.max(0, gameData.teamMoney);
-                updateDisplay();
-                
-                alert(result.message);
-                displayTransferPlayers(); // 목록 새로고침
-                
-                // 성장 시스템에 새 선수 추가
-                if (result.player.age <= 25 && typeof playerGrowthSystem !== 'undefined') {
-                    playerGrowthSystem.initializePlayerGrowth();
-                }
-                
-                // 팀 선수 목록 새로고침
-                if (document.getElementById('squad').classList.contains('active')) {
-                    displayTeamPlayers();
-                }
-            } else {
-                alert(result.message);
-            }
-        });
         
         container.appendChild(playerCard);
     });
+}
+
+// 내 팀 선수 표시
+function displayMyTeamPlayers() {
+    const container = document.getElementById('myTeamPlayers');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    const myPlayers = transferSystem.getMyTeamPlayers();
+
+    if (myPlayers.length === 0) {
+        container.innerHTML = '<p class="no-data">팀에 선수가 없습니다.</p>';
+        return;
+    }
+
+    myPlayers.forEach(player => {
+        const playerCard = document.createElement('div');
+        playerCard.className = 'my-team-player';
+        
+        playerCard.innerHTML = `
+            <div class="player-header">
+                <div class="player-name">${player.name}</div>
+                <div class="player-position-badge ${player.position.toLowerCase()}">${player.position}</div>
+            </div>
+            <div class="player-info">
+                <div class="player-rating">능력치: <strong>${player.rating}</strong></div>
+                <div class="player-age">나이: ${player.age}세</div>
+                <div class="estimated-price">예상 판매가: ${player.estimatedPrice}억</div>
+            </div>
+            <div class="player-actions">
+                <button onclick="showPlayerGrowthDetails('${player.name}')" class="details-btn">
+                    상세정보
+                </button>
+                <button onclick="releasePlayer(${JSON.stringify(player).replace(/"/g, '&quot;')})" class="release-btn">
+                    방출하기
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(playerCard);
+    });
+}
+
+// 선수 구매
+function buyPlayer(player) {
+    if (gameData.teamMoney < player.price) {
+        alert('자금이 부족합니다!');
+        return;
+    }
+
+    if (teams[gameData.selectedTeam].length >= 30) {
+        alert('팀 인원이 가득 찼습니다! (최대 30명)');
+        return;
+    }
+
+    const confirmMessage = `${player.name}을(를) ${player.price}억에 영입하시겠습니까?\n\n` +
+                          `포지션: ${player.position}\n` +
+                          `능력치: ${player.rating}\n` +
+                          `나이: ${player.age}세`;
+
+    if (confirm(confirmMessage)) {
+        const result = transferSystem.signPlayer(player);
+        
+        if (result.success) {
+            alert(result.message);
+            displayTransferPlayers();
+            displayMyTeamPlayers();
+            updateLobbyDisplay();
+            
+            // 성장 시스템에 새 선수 추가
+            if (result.player.age <= 25 && typeof playerGrowthSystem !== 'undefined') {
+                playerGrowthSystem.initializePlayerGrowth();
+            }
+        } else {
+            alert(result.message);
+        }
+    }
+}
+
+// 선수 방출
+function releasePlayer(player) {
+    const confirmMessage = `${player.name}을(를) 정말 방출하시겠습니까?\n\n` +
+                          `예상 받을 수 있는 금액: ${player.estimatedPrice}억\n` +
+                          `(자유계약으로 방출하면 0억)`;
+
+    const choice = confirm(confirmMessage + '\n\n확인: 자유계약 방출, 취소: 돌아가기');
+    
+    if (choice) {
+        const result = transferSystem.releasePlayer(player, 0);
+        
+        if (result.success) {
+            alert(result.message);
+            displayTransferPlayers();
+            displayMyTeamPlayers();
+            updateLobbyDisplay();
+            
+            // 스쿼드 화면 업데이트
+            if (typeof updateFormationDisplay === 'function') {
+                updateFormationDisplay();
+            }
+        } else {
+            alert(result.message);
+        }
+    }
 }
 
 // 선수 검색
@@ -461,20 +635,24 @@ function searchPlayers() {
         name: document.getElementById('nameSearch').value,
         position: document.getElementById('positionFilter').value,
         minRating: parseInt(document.getElementById('minRating').value) || 0,
-        maxAge: parseInt(document.getElementById('maxAge').value) || 999
+        maxAge: parseInt(document.getElementById('maxAge').value) || 999,
+        maxPrice: parseInt(document.getElementById('maxPrice').value) || 999999
     };
-    
+
     const container = document.getElementById('transferPlayers');
     container.innerHTML = '';
 
     const filteredPlayers = transferSystem.searchPlayers(filters);
 
     if (filteredPlayers.length === 0) {
-        container.innerHTML = '<p>검색 조건에 맞는 선수가 없습니다.</p>';
+        container.innerHTML = '<p class="no-data">검색 조건에 맞는 선수가 없습니다.</p>';
         return;
     }
 
-    filteredPlayers.forEach(player => {
+    // 검색 결과도 20명으로 제한
+    const limitedPlayers = filteredPlayers.slice(0, 20);
+
+    limitedPlayers.forEach(player => {
         const playerCard = document.createElement('div');
         playerCard.className = 'transfer-player';
         
@@ -482,65 +660,45 @@ function searchPlayers() {
             "외부리그" : teamNames[player.originalTeam];
         
         playerCard.innerHTML = `
-            <div class="player-name">${player.name}</div>
-            <div class="player-position">${player.position}</div>
-            <div class="player-rating">능력치: ${player.rating}</div>
-            <div class="player-age">나이: ${player.age}</div>
-            <div class="player-team">소속: ${teamInfo}</div>
-            <div class="transfer-price">${player.price}억</div>
-            <div class="market-days">시장 ${player.daysOnMarket}일째</div>
+            <div class="player-header">
+                <div class="player-name">${player.name}</div>
+                <div class="player-position-badge ${player.position.toLowerCase()}">${player.position}</div>
+            </div>
+            <div class="player-info">
+                <div class="player-rating">능력치: <strong>${player.rating}</strong></div>
+                <div class="player-age">나이: ${player.age}세</div>
+                <div class="player-team">소속: ${teamInfo}</div>
+                <div class="market-days">시장 ${player.daysOnMarket}일째</div>
+            </div>
+            <div class="transfer-price-section">
+                <div class="transfer-price">${player.price}억</div>
+                <button onclick="buyPlayer(${JSON.stringify(player).replace(/"/g, '&quot;')})" 
+                        class="buy-btn ${gameData.teamMoney >= player.price ? '' : 'disabled'}"
+                        ${gameData.teamMoney >= player.price ? '' : 'disabled'}>
+                    ${gameData.teamMoney >= player.price ? '영입하기' : '자금부족'}
+                </button>
+            </div>
         `;
-        
-        playerCard.addEventListener('click', () => {
-            const result = transferSystem.signPlayer(player);
-            
-            if (result.success) {
-                gameData.teamMoney = Math.max(0, gameData.teamMoney);
-                updateDisplay();
-                
-                alert(result.message);
-                searchPlayers(); // 검색 결과 새로고침
-                
-                // 성장 시스템에 새 선수 추가
-                if (result.player.age <= 25 && typeof playerGrowthSystem !== 'undefined') {
-                    playerGrowthSystem.initializePlayerGrowth();
-                }
-            } else {
-                alert(result.message);
-            }
-        });
         
         container.appendChild(playerCard);
     });
+
+    if (filteredPlayers.length > 20) {
+        const moreInfo = document.createElement('div');
+        moreInfo.className = 'search-info';
+        moreInfo.innerHTML = `<p>검색 결과 ${filteredPlayers.length}명 중 상위 20명만 표시됩니다. 더 구체적인 검색을 해보세요.</p>`;
+        container.appendChild(moreInfo);
+    }
 }
 
-// 선수 방출 기능 (팀 선수 목록에서 우클릭)
-function addReleasePlayerOption() {
-    document.addEventListener('contextmenu', function(e) {
-        if (e.target.closest('.player-card') && document.getElementById('squad').classList.contains('active')) {
-            e.preventDefault();
-            
-            const playerCard = e.target.closest('.player-card');
-            const playerName = playerCard.querySelector('.name').textContent;
-            
-            // 현재 팀에서 해당 선수 찾기
-            const teamPlayers = teams[gameData.selectedTeam];
-            const player = teamPlayers.find(p => p.name === playerName);
-            
-            if (player && confirm(`${player.name}을(를) 방출하시겠습니까?`)) {
-                const result = transferSystem.releasePlayer(player);
-                
-                if (result.success) {
-                    alert(result.message);
-                    displayTeamPlayers();
-                    updateFormationDisplay();
-                    displayTransferPlayers(); // 이적 시장 새로고침
-                } else {
-                    alert(result.message);
-                }
-            }
-        }
-    });
+// 검색 초기화
+function resetSearch() {
+    document.getElementById('nameSearch').value = '';
+    document.getElementById('positionFilter').value = '';
+    document.getElementById('minRating').value = '';
+    document.getElementById('maxAge').value = '';
+    document.getElementById('maxPrice').value = '';
+    displayTransferPlayers();
 }
 
 // 경기 후 이적 시장 업데이트
@@ -548,123 +706,39 @@ function updateTransferMarketPostMatch() {
     transferSystem.updateTransferMarket();
 }
 
-// 이적 시스템 초기화 (게임 로드 시)
-function initializeTransferSystem() {
-    // 이적 시장 초기화
-    if (transferSystem.transferMarket.length === 0) {
-        transferSystem.initializeTransferMarket();
+// 기존 경기 종료 함수에 이적 시장 업데이트 추가
+const originalEndMatch2 = window.endMatch;
+window.endMatch = function() {
+    if (originalEndMatch2) {
+        originalEndMatch2.call(this);
     }
-    
-    // 우클릭 이벤트 추가
-    addReleasePlayerOption();
-}
-
-// 저장/불러오기에 이적 데이터 포함하도록 기존 함수 확장
-function saveGameWithTransfer() {
-    // 기존 게임 데이터에 이적 시스템 데이터 추가
-    gameData.transferSystemData = transferSystem.getSaveData();
-    
-    // 선수 성장 데이터도 포함
-    if (typeof playerGrowthSystem !== 'undefined') {
-        gameData.playerGrowthData = playerGrowthSystem.getSaveData();
-    }
-    
-    const saveData = {
-        gameData: gameData,
-        teams: teams,
-        timestamp: new Date().toISOString()
-    };
-    
-    const blob = new Blob([JSON.stringify(saveData, null, 2)], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${teamNames[gameData.selectedTeam]}_${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-}
-
-function loadGameWithTransfer(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const saveData = JSON.parse(e.target.result);
-            gameData = saveData.gameData;
-            
-            // 팀 데이터 복원
-            if (saveData.teams) {
-                Object.assign(teams, saveData.teams);
-            }
-            
-            // 이적 시스템 데이터 복원
-            if (gameData.transferSystemData && typeof transferSystem !== 'undefined') {
-                transferSystem.loadSaveData(gameData.transferSystemData);
-            }
-            
-            // 선수 성장 데이터 복원
-            if (gameData.playerGrowthData && typeof playerGrowthSystem !== 'undefined') {
-                playerGrowthSystem.loadSaveData(gameData.playerGrowthData);
-            }
-            
-            // 화면 업데이트
-            document.getElementById('teamName').textContent = teamNames[gameData.selectedTeam];
-            updateDisplay();
-            updateFormationDisplay();
-            displayTeamPlayers();
-            displayTransferPlayers();
-            
-            alert('게임을 불러왔습니다!');
-        } catch (error) {
-            alert('저장 파일을 불러오는 중 오류가 발생했습니다.');
-            console.error(error);
-        }
-    };
-    reader.readAsText(file);
-}
-
-// 기존 저장/불러오기 함수 대체
-function replaceSaveLoadFunctions() {
-    // 기존 저장 버튼 이벤트 대체
-    const saveBtn = document.getElementById('saveGameBtn');
-    if (saveBtn) {
-        saveBtn.removeEventListener('click', saveGame);
-        saveBtn.addEventListener('click', saveGameWithTransfer);
-    }
-    
-    // 기존 불러오기 이벤트 대체
-    const loadInput = document.getElementById('loadGameInput');
-    if (loadInput) {
-        loadInput.removeEventListener('change', loadGame);
-        loadInput.addEventListener('change', loadGameWithTransfer);
-    }
-}
-
-// 페이지 로드 시 이적 시스템 초기화
-document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
-        initializeTransferSystem();
-        replaceSaveLoadFunctions();
+        updateTransferMarketPostMatch();
+    }, 3000);
+};
+
+// 저장/불러오기에 이적 데이터 포함
+const originalSaveGame2 = window.saveGame;
+window.saveGame = function() {
+    gameData.transferSystemData = transferSystem.getSaveData();
+    if (originalSaveGame2) {
+        originalSaveGame2.call(this);
+    }
+};
+
+const originalLoadGame2 = window.loadGame;
+window.loadGame = function() {
+    if (originalLoadGame2) {
+        originalLoadGame2.call(this);
+    }
+    if (gameData.transferSystemData) {
+        transferSystem.loadSaveData(gameData.transferSystemData);
+    }
+};
+
+// 게임 초기화 시 이적 시장 초기화
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        initializeTransferMarket();
     }, 1000);
 });
-
-// 경기 종료 후 이적 시장 업데이트를 위한 이벤트 연결
-if (typeof window.endMatch === 'function') {
-    const originalEndMatch = window.endMatch;
-    window.endMatch = function(matchData) {
-        if (originalEndMatch) {
-            originalEndMatch.call(this, matchData);
-        }
-        setTimeout(() => {
-            updateTransferMarketPostMatch();
-        }, 3000);
-    };
-}
-
-// 전역으로 함수들 노출
-window.transferSystem = transferSystem;
-window.displayTransferPlayers = displayTransferPlayers;
-window.searchPlayers = searchPlayers;
-window.initializeTransferMarket = initializeTransferMarket;
