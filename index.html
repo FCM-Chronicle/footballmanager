@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Football Manager - 세륜 에디션</title>
+    <title>Football Manager</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div id="app">
         <!-- 팀 선택 화면 -->
         <div id="teamSelection" class="screen active">
             <h1>팀 선택</h1>
@@ -102,34 +102,22 @@
                     <p>"FORZA NAPOLI SEMPRE" 스콧 맥토미니와 함께하는 남부 이탈리아의 열정. 파르테노페이의 꿈.</p>
                     <div class="team-rating">★★★☆☆</div>
                 </div>
-                <div class="team-card" data-team="seryun">
-                    <h3>세륜중학교</h3>
-                    <p>"세륜 세륜 화이팅" 세륜중 학생과 함께하는 서울 남부의 열정. 송파의 꿈.</p>
-                    <div class="team-rating">★☆☆☆☆</div>
-                </div>
             </div>
         </div>
 
-        <!-- 메인 로비 화면 -->
+        <!-- 메인 로비 -->
         <div id="lobby" class="screen">
             <div class="lobby-header">
-                <h1 id="teamName"></h1>
+                <h1 id="teamName">팀 이름</h1>
                 <div class="team-info">
                     <div class="info-item">
-                        <span class="label">자금:</span>
-                        <span id="teamMoney">2000억</span>
+                        <span>자금: </span><span id="teamMoney">1000억</span>
                     </div>
                     <div class="info-item">
-                        <span class="label">사기:</span>
-                        <span id="teamMorale">50</span>
+                        <span>사기: </span><span id="teamMorale">50</span>
                     </div>
                     <div class="info-item">
-                        <span class="label">스폰서:</span>
-                        <span id="currentSponsor">없음</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="label">시즌:</span>
-                        <span id="seasonInfo">1시즌 - 1경기</span>
+                        <span>스폰서: </span><span id="sponsor">없음</span>
                     </div>
                 </div>
             </div>
@@ -137,185 +125,181 @@
             <div class="lobby-tabs">
                 <button class="tab-btn active" data-tab="squad">스쿼드</button>
                 <button class="tab-btn" data-tab="match">경기</button>
-                <button class="tab-btn" data-tab="transfer">이적</button>
-                <button class="tab-btn" data-tab="league">리그</button>
-                <button class="tab-btn" data-tab="stats">통계</button>
-                <button class="tab-btn" data-tab="sponsor">스폰서</button>
+                <button class="tab-btn" data-tab="transfer">이적시장</button>
+                <button class="tab-btn" data-tab="table">순위표</button>
+                <button class="tab-btn" data-tab="records">기록</button>
                 <button class="tab-btn" data-tab="sns">SNS</button>
+                <button class="tab-btn" data-tab="settings">설정</button>
             </div>
 
             <!-- 스쿼드 탭 -->
             <div id="squad" class="tab-content active">
                 <div class="formation-container">
-                    <div class="formation-field">
+                    <div class="field">
                         <!-- 골키퍼 -->
                         <div class="position gk" data-position="gk">
-                            <div class="position-label">GK</div>
-                            <div class="player-slot" id="gk-slot"></div>
+                            <div class="player-slot" onclick="selectPosition('gk')">GK</div>
                         </div>
                         
                         <!-- 수비수 -->
-                        <div class="position-line defense">
+                        <div class="position-line df-line">
                             <div class="position df" data-position="df-0">
-                                <div class="position-label">DF</div>
-                                <div class="player-slot" id="df-0-slot"></div>
+                                <div class="player-slot" onclick="selectPosition('df', 0)">DF</div>
                             </div>
                             <div class="position df" data-position="df-1">
-                                <div class="position-label">DF</div>
-                                <div class="player-slot" id="df-1-slot"></div>
+                                <div class="player-slot" onclick="selectPosition('df', 1)">DF</div>
                             </div>
                             <div class="position df" data-position="df-2">
-                                <div class="position-label">DF</div>
-                                <div class="player-slot" id="df-2-slot"></div>
+                                <div class="player-slot" onclick="selectPosition('df', 2)">DF</div>
                             </div>
                             <div class="position df" data-position="df-3">
-                                <div class="position-label">DF</div>
-                                <div class="player-slot" id="df-3-slot"></div>
+                                <div class="player-slot" onclick="selectPosition('df', 3)">DF</div>
                             </div>
                         </div>
                         
                         <!-- 미드필더 -->
-                        <div class="position-line midfield">
+                        <div class="position-line mf-line">
                             <div class="position mf" data-position="mf-0">
-                                <div class="position-label">MF</div>
-                                <div class="player-slot" id="mf-0-slot"></div>
+                                <div class="player-slot" onclick="selectPosition('mf', 0)">MF</div>
                             </div>
                             <div class="position mf" data-position="mf-1">
-                                <div class="position-label">MF</div>
-                                <div class="player-slot" id="mf-1-slot"></div>
+                                <div class="player-slot" onclick="selectPosition('mf', 1)">MF</div>
                             </div>
                             <div class="position mf" data-position="mf-2">
-                                <div class="position-label">MF</div>
-                                <div class="player-slot" id="mf-2-slot"></div>
+                                <div class="player-slot" onclick="selectPosition('mf', 2)">MF</div>
                             </div>
                         </div>
                         
                         <!-- 공격수 -->
-                        <div class="position-line attack">
+                        <div class="position-line fw-line">
                             <div class="position fw" data-position="fw-0">
-                                <div class="position-label">FW</div>
-                                <div class="player-slot" id="fw-0-slot"></div>
+                                <div class="player-slot" onclick="selectPosition('fw', 0)">FW</div>
                             </div>
                             <div class="position fw" data-position="fw-1">
-                                <div class="position-label">FW</div>
-                                <div class="player-slot" id="fw-1-slot"></div>
+                                <div class="player-slot" onclick="selectPosition('fw', 1)">FW</div>
                             </div>
                             <div class="position fw" data-position="fw-2">
-                                <div class="position-label">FW</div>
-                                <div class="player-slot" id="fw-2-slot"></div>
+                                <div class="player-slot" onclick="selectPosition('fw', 2)">FW</div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="team-players">
-                        <h3>팀 선수</h3>
-                        <div id="teamPlayersList"></div>
-                    </div>
                 </div>
                 
-                <!-- 전술 선택 -->
-                <div class="tactics-section">
-                    <h3>전술 선택</h3>
-                    <div class="tactics-grid">
-                        <button class="tactic-btn" data-tactic="gegenpress">게겐프레싱</button>
-                        <button class="tactic-btn" data-tactic="twoLines">두 줄 수비</button>
-                        <button class="tactic-btn" data-tactic="lavolpiana">라볼피아나</button>
-                        <button class="tactic-btn" data-tactic="longBall">롱볼축구</button>
-                        <button class="tactic-btn" data-tactic="possession">점유율 축구</button>
-                        <button class="tactic-btn" data-tactic="catenaccio">카테나치오</button>
-                        <button class="tactic-btn" data-tactic="totalFootball">토탈 풋볼</button>
-                        <button class="tactic-btn" data-tactic="tikitaka">티키타카</button>
-                        <button class="tactic-btn" data-tactic="parkBus">침대 축구</button>
-                    </div>
-                    <div id="currentTactic">현재 전술: 없음</div>
+                <div class="player-list">
+                    <h3>선수 목록</h3>
+                    <div id="playerList"></div>
                 </div>
             </div>
 
             <!-- 경기 탭 -->
             <div id="match" class="tab-content">
-                <div class="match-section">
+                <div class="match-info">
                     <h3>다음 경기</h3>
-                    <div id="nextMatch">상대팀을 찾고 있습니다...</div>
-                    <button id="startMatch" class="btn primary">경기 시작</button>
+                    <div id="nextMatch">상대 팀을 기다리는 중...</div>
+                    <button id="startMatch" onclick="startMatch()">경기 시작</button>
                 </div>
                 
-                <div id="matchProgress" class="match-progress" style="display: none;">
+                <div id="matchEvents" class="match-events" style="display: none;">
                     <div class="match-header">
-                        <div class="team">
-                            <span id="homeTeam"></span>
-                            <span id="homeScore">0</span>
-                        </div>
-                        <div class="vs">VS</div>
-                        <div class="team">
-                            <span id="awayScore">0</span>
-                            <span id="awayTeam"></span>
-                        </div>
+                        <div id="matchScore">0 - 0</div>
+                        <div id="matchTime">0분</div>
                     </div>
-                    <div class="match-time">
-                        <span id="matchTime">0</span>분
-                    </div>
-                    <div class="match-events" id="matchEvents"></div>
+                    <div id="eventsList"></div>
+                </div>
+                
+                <div id="matchStats" class="match-stats" style="display: none;">
+                    <h3>경기 통계</h3>
+                    <div id="statsDisplay"></div>
                 </div>
             </div>
 
-            <!-- 이적 탭 -->
+            <!-- 이적시장 탭 -->
             <div id="transfer" class="tab-content">
                 <div class="transfer-search">
-                    <h3>선수 검색</h3>
-                    <div class="search-filters">
-                        <input type="text" id="nameSearch" placeholder="선수 이름">
-                        <select id="positionFilter">
-                            <option value="">모든 포지션</option>
-                            <option value="GK">골키퍼</option>
-                            <option value="DF">수비수</option>
-                            <option value="MF">미드필더</option>
-                            <option value="FW">공격수</option>
-                        </select>
-                        <input type="number" id="minRating" placeholder="최소 능력치">
-                        <input type="number" id="maxAge" placeholder="최대 나이">
-                        <button onclick="searchPlayers()">검색</button>
-                    </div>
+                    <input type="text" id="nameSearch" placeholder="선수 이름">
+                    <select id="positionFilter">
+                        <option value="">모든 포지션</option>
+                        <option value="GK">골키퍼</option>
+                        <option value="DF">수비수</option>
+                        <option value="MF">미드필더</option>
+                        <option value="FW">공격수</option>
+                    </select>
+                    <input type="number" id="minRating" placeholder="최소 능력치">
+                    <input type="number" id="maxAge" placeholder="최대 나이">
+                    <button onclick="searchPlayers()">검색</button>
                 </div>
-                <div id="transferPlayers" class="transfer-players"></div>
+                <div id="transferPlayers"></div>
             </div>
 
-            <!-- 리그 탭 -->
-            <div id="league" class="tab-content">
-                <div class="league-section">
+            <!-- 순위표 탭 -->
+            <div id="table" class="tab-content">
+                <div class="league-table">
                     <h3>리그 순위표</h3>
-                    <div id="leagueTable"></div>
-                </div>
-                <div class="top-scorers">
-                    <h3>득점왕</h3>
-                    <div id="topScorers"></div>
-                </div>
-                <div class="top-assists">
-                    <h3>도움왕</h3>
-                    <div id="topAssists"></div>
-                </div>
-            </div>
-
-            <!-- 통계 탭 -->
-            <div id="stats" class="tab-content">
-                <div class="stats-section">
-                    <h3>시즌 통계</h3>
-                    <div id="seasonStats"></div>
+                    <table id="leagueTable">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>팀</th>
+                                <th>경기</th>
+                                <th>승</th>
+                                <th>무</th>
+                                <th>패</th>
+                                <th>득실</th>
+                                <th>승점</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- 스폰서 탭 -->
-            <div id="sponsor" class="tab-content">
-                <div class="sponsor-section">
-                    <h3>스폰서 계약</h3>
-                    <div id="sponsorList"></div>
+            <!-- 기록 탭 -->
+            <div id="records" class="tab-content">
+                <div class="records-container">
+                    <div class="records-section">
+                        <h3>득점왕</h3>
+                        <div id="topScorers"></div>
+                    </div>
+                    <div class="records-section">
+                        <h3>도움왕</h3>
+                        <div id="topAssisters"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- SNS 탭 -->
             <div id="sns" class="tab-content">
-                <div class="sns-section">
+                <div class="sns-container">
                     <h3>축구 뉴스</h3>
-                    <div id="snsNews" class="news-feed"></div>
+                    <div id="snsNewsList"></div>
+                </div>
+            </div>
+
+            <!-- 설정 탭 -->
+            <div id="settings" class="tab-content">
+                <div class="settings-container">
+                    <h3>게임 설정</h3>
+                    <div class="setting-item">
+                        <label>전술 설정:</label>
+                        <select id="tacticSelect">
+                            <option value="gegenpressing">게겐프레싱</option>
+                            <option value="twoLine">두 줄 수비</option>
+                            <option value="lavolpiana">라볼피아나</option>
+                            <option value="longBall">롱볼축구</option>
+                            <option value="possession">점유율 축구</option>
+                            <option value="parking">침대 축구</option>
+                            <option value="catenaccio">카테나치오</option>
+                            <option value="totalFootball">토탈 풋볼</option>
+                            <option value="tikitaka">티키타카</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <button onclick="saveGame()">게임 저장</button>
+                        <button onclick="loadGame()">게임 불러오기</button>
+                    </div>
+                    <div class="setting-item">
+                        <button onclick="showSponsorships()">스폰서 계약</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -324,30 +308,36 @@
         <div id="interview" class="screen">
             <div class="interview-container">
                 <h2>경기 후 인터뷰</h2>
-                <div id="matchResult"></div>
-                <div class="interview-options" id="interviewOptions"></div>
+                <div id="interviewQuestion"></div>
+                <div id="interviewOptions"></div>
             </div>
         </div>
 
-        <!-- 저장/불러오기 버튼 -->
-        <div class="save-controls">
-            <button onclick="saveGame()" class="btn secondary">게임 저장</button>
-            <input type="file" id="loadFile" accept=".json" style="display: none;" onchange="loadGame(event)">
-            <button onclick="document.getElementById('loadFile').click()" class="btn secondary">게임 불러오기</button>
+        <!-- 선수 선택 모달 -->
+        <div id="playerSelectModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>선수 선택</h3>
+                <div id="modalPlayerList"></div>
+                <button onclick="closePlayerModal()">취소</button>
+            </div>
+        </div>
+
+        <!-- 스폰서 모달 -->
+        <div id="sponsorModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <h3>스폰서 계약</h3>
+                <div id="sponsorList"></div>
+                <button onclick="closeSponsorModal()">닫기</button>
+            </div>
         </div>
     </div>
 
-    <!-- 팝업 모달 -->
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="modalBody"></div>
-        </div>
-    </div>
-
+    <!-- 스크립트 파일들 -->
     <script src="script.js"></script>
-    <script src="playerGrowth.js"></script>
-    <script src="tacticSystem.js"></script>
+    <script src="tactics.js"></script>
     <script src="transfer.js"></script>
+    <script src="playerGrowth.js"></script>
+    <script src="records.js"></script>
+    <script src="sns.js"></script>
 </body>
 </html>
