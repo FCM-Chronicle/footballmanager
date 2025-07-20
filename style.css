@@ -560,52 +560,104 @@ textarea:focus {
     color: #667eea;
 }
 
-/* 이적시장 스타일 */
-.transfer-search {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 20px;
+/* 이적시장 스타일 (단순화) */
+.transfer-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.money-display {
+    text-align: center;
     margin-bottom: 20px;
-}
-
-.search-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.transfer-player {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
     padding: 20px;
-    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+}
+
+.transfer-actions {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.refresh-btn {
+    background: rgba(76, 175, 80, 0.8);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 1rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    border: 2px solid transparent;
 }
 
-.transfer-player:hover {
+.refresh-btn:hover {
+    background: rgba(76, 175, 80, 1);
+    transform: translateY(-2px);
+}
+
+.transfer-player-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.transfer-player-card:hover {
     background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(102, 126, 234, 0.5);
     transform: translateY(-3px);
 }
 
-.player-transfer-info {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 10px;
-    font-size: 0.9rem;
+.player-info h4 {
+    margin-bottom: 10px;
+    color: #fff;
+    font-size: 1.2rem;
 }
 
-.transfer-price {
-    font-size: 1.2rem;
+.player-info p {
+    margin: 5px 0;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.player-price {
+    text-align: center;
+}
+
+.price {
+    font-size: 1.5rem;
     font-weight: bold;
     color: #4CAF50;
+    margin-bottom: 10px;
+}
+
+.buy-btn {
+    background: rgba(33, 150, 243, 0.8);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.buy-btn:hover:not(.disabled) {
+    background: rgba(33, 150, 243, 1);
+    transform: scale(1.05);
+}
+
+.buy-btn.disabled {
+    background: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+}
+
+.no-data {
     text-align: center;
-    margin-top: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    font-style: italic;
+    padding: 40px;
 }
 
 /* 전술 스타일 */
