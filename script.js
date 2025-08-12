@@ -920,7 +920,7 @@ const playerDatabase = {
         { name: "민지훈", position: "MF", country: "대한민국", age: 20, rating: 68 },
         { name: "루카스", position: "FW", country: "브라질", age: 25, rating: 74 },
         { name: "박장한결", position: "MF", country: "대한민국", age: 21, rating: 68 }
-    ]
+    ],
 
     // 1부 리그
     "바르셀로나": [
