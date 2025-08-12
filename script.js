@@ -81,7 +81,7 @@ const leagueData = {
 
 // 선수 데이터베이스 (기본 선수들만 예시로)
 const playerDatabase = {
-   ],
+   
 
     "아르헨티나 연합": [
         { name: "프랑코 아르마니", position: "GK", country: "아르헨티나", age: 38, rating: 74 },
