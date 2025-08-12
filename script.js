@@ -1,3 +1,4 @@
+// 전체 스크립트 script.js
 // 게임 데이터
 const gameData = {
     selectedTeam: null,
