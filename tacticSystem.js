@@ -1710,3 +1710,4 @@ function displayTacticsMatrix() {
     container.innerHTML = '';
     container.appendChild(table);
 }
+});
