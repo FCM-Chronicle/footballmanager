@@ -13,28 +13,30 @@ class SNSSystem {
     shouldGenerateNews(type, league, isMyTeam = false) {
         if (isMyTeam) return true; // 내 팀은 100%
         
-        const estimatedPrice = transferSystem.calculatePlayerPrice({
-            ...randomPlayer,
-            currentLeague: this.getTeamLeague(randomTeam.name)
-        });
-
-        const template = rumorTemplates[Math.floor(Math.random() * rumorTemplates.length)];
-        const title = template
-            .replace('{playerName}', randomPlayer.name)
-            .replace('{toTeam}', randomTeam.name)
-            .replace('{price}', `${estimatedPrice}억원`);
-
-        const content = `구단 내부 소식통에 의하면, 최근 ${randomPlayer.name} (${randomPlayer.position}) 선수가 ${estimatedPrice}억원에 달하는 금액으로 ${randomTeam.name}과 강하게 연결되고 있다고 합니다.`;
-
-        const hashtags = [`#루머`, `#${randomPlayer.name}`, `#${randomTeam.name}`];
-
-        this.addNews(gameData.currentLeague, {
-            type: 'rumor',
-            title: title,
-            content: content,
-            hashtags: hashtags,
-            timestamp: Date.now()
-        });
+        const probabilities = {
+            match: {
+                same: 0.8,   // 같은 리그
+                other: 0.3   // 다른 리그
+            },
+            transfer: 1.0,   // 이적은 100%
+            promotion: 1.0,  // 승강은 100%
+            rumor: 0.2      // 루머는 20%
+        };
+        
+        const isCurrentLeague = league === gameData.currentLeague;
+        
+        switch (type) {
+            case 'match':
+                return Math.random() < (isCurrentLeague ? probabilities.match.same : probabilities.match.other);
+            case 'transfer':
+                return Math.random() < probabilities.transfer;
+            case 'promotion':
+                return Math.random() < probabilities.promotion;
+            case 'rumor':
+                return Math.random() < probabilities.rumor;
+            default:
+                return false;
+        }
     }
 
     // 승강 뉴스 생성
@@ -121,96 +123,6 @@ class SNSSystem {
             return allNews.sort((a, b) => b.timestamp - a.timestamp);
         } else {
             return this.news[filter] || [];
-        }
-    }
-
-    // SNS 시스템 초기화
-    initialize() {
-        // 초기 루머 뉴스 몇 개 생성
-        for (let i = 0; i < 3; i++) {
-            this.generateTransferRumor();
-        }
-    }
-}
-
-// SNS 시스템 인스턴스 생성
-const snsSystem = new SNSSystem();
-
-// SNS 초기화
-function initializeSNS() {
-    snsSystem.initialize();
-}
-
-// SNS 표시
-function displaySNS() {
-    const currentFilter = document.querySelector('.sns-filter.active')?.dataset.filter || 'all';
-    const newsFeed = document.getElementById('newsFeed');
-    const news = snsSystem.getFilteredNews(currentFilter);
-
-    newsFeed.innerHTML = '';
-
-    if (news.length === 0) {
-        newsFeed.innerHTML = '<div style="text-align: center; color: #666; padding: 2rem;">뉴스가 없습니다.</div>';
-        return;
-    }
-
-    news.forEach(newsItem => {
-        const newsCard = document.createElement('div');
-        newsCard.className = 'news-card';
-
-        const date = new Date(newsItem.timestamp).toLocaleDateString('ko-KR');
-        const time = new Date(newsItem.timestamp).toLocaleTimeString('ko-KR', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-        });
-
-        newsCard.innerHTML = `
-            <div class="news-header">
-                <div class="news-title">${newsItem.title}</div>
-                <div class="news-date">${date} ${time}</div>
-            </div>
-            <div class="news-content">${newsItem.content}</div>
-            <div class="news-hashtags">
-                ${newsItem.hashtags.map(tag => `<span class="hashtag">${tag}</span>`).join('')}
-            </div>
-        `;
-
-        newsFeed.appendChild(newsCard);
-    });
-}
-
-// SNS 필터 이벤트 리스너
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.sns-filter').forEach(filter => {
-        filter.addEventListener('click', () => {
-            document.querySelectorAll('.sns-filter').forEach(f => f.classList.remove('active'));
-            filter.classList.add('active');
-            displaySNS();
-        });
-    });
-}); probabilities = {
-            match: {
-                same: 0.8,   // 같은 리그
-                other: 0.3   // 다른 리그
-            },
-            transfer: 1.0,   // 이적은 100%
-            promotion: 1.0,  // 승강은 100%
-            rumor: 0.2      // 루머는 20%
-        };
-        
-        const isCurrentLeague = league === gameData.currentLeague;
-        
-        switch (type) {
-            case 'match':
-                return Math.random() < (isCurrentLeague ? probabilities.match.same : probabilities.match.other);
-            case 'transfer':
-                return Math.random() < probabilities.transfer;
-            case 'promotion':
-                return Math.random() < probabilities.promotion;
-            case 'rumor':
-                return Math.random() < probabilities.rumor;
-            default:
-                return false;
         }
     }
 
@@ -353,4 +265,92 @@ document.addEventListener('DOMContentLoaded', () => {
         const allTeams = Object.values(leagueData).flat().map(data => data.teams).flat();
         const randomTeam = allTeams[Math.floor(Math.random() * allTeams.length)];
         
-        const
+        const estimatedPrice = transferSystem ? transferSystem.calculatePlayerPrice({
+            ...randomPlayer,
+            currentLeague: this.getTeamLeague(randomTeam.name)
+        }) : Math.floor(Math.random() * 500) + 50;
+
+        const template = rumorTemplates[Math.floor(Math.random() * rumorTemplates.length)];
+        const title = template
+            .replace('{playerName}', randomPlayer.name)
+            .replace('{toTeam}', randomTeam.name)
+            .replace('{price}', `${estimatedPrice}억원`);
+
+        const content = `구단 내부 소식통에 의하면, 최근 ${randomPlayer.name} (${randomPlayer.position}) 선수가 ${estimatedPrice}억원에 달하는 금액으로 ${randomTeam.name}과 강하게 연결되고 있다고 합니다.`;
+
+        const hashtags = [`#루머`, `#${randomPlayer.name}`, `#${randomTeam.name}`];
+
+        this.addNews(gameData.currentLeague, {
+            type: 'rumor',
+            title: title,
+            content: content,
+            hashtags: hashtags,
+            timestamp: Date.now()
+        });
+    }
+
+    // SNS 시스템 초기화
+    initialize() {
+        // 초기 루머 뉴스 몇 개 생성
+        for (let i = 0; i < 3; i++) {
+            this.generateTransferRumor();
+        }
+    }
+}
+
+// SNS 시스템 인스턴스 생성
+const snsSystem = new SNSSystem();
+
+// SNS 초기화
+function initializeSNS() {
+    snsSystem.initialize();
+}
+
+// SNS 표시
+function displaySNS() {
+    const currentFilter = document.querySelector('.sns-filter.active')?.dataset.filter || 'all';
+    const newsFeed = document.getElementById('newsFeed');
+    const news = snsSystem.getFilteredNews(currentFilter);
+
+    newsFeed.innerHTML = '';
+
+    if (news.length === 0) {
+        newsFeed.innerHTML = '<div style="text-align: center; color: #666; padding: 2rem;">뉴스가 없습니다.</div>';
+        return;
+    }
+
+    news.forEach(newsItem => {
+        const newsCard = document.createElement('div');
+        newsCard.className = 'news-card';
+
+        const date = new Date(newsItem.timestamp).toLocaleDateString('ko-KR');
+        const time = new Date(newsItem.timestamp).toLocaleTimeString('ko-KR', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+        });
+
+        newsCard.innerHTML = `
+            <div class="news-header">
+                <div class="news-title">${newsItem.title}</div>
+                <div class="news-date">${date} ${time}</div>
+            </div>
+            <div class="news-content">${newsItem.content}</div>
+            <div class="news-hashtags">
+                ${newsItem.hashtags.map(tag => `<span class="hashtag">${tag}</span>`).join('')}
+            </div>
+        `;
+
+        newsFeed.appendChild(newsCard);
+    });
+}
+
+// SNS 필터 이벤트 리스너
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.sns-filter').forEach(filter => {
+        filter.addEventListener('click', () => {
+            document.querySelectorAll('.sns-filter').forEach(f => f.classList.remove('active'));
+            filter.classList.add('active');
+            displaySNS();
+        });
+    });
+});
