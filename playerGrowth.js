@@ -1,4 +1,4 @@
-// 선수 성장 시스템
+// 선수 성장 시스템(playerGrowth.js)
 class PlayerGrowthSystem {
     constructor() {
         this.growthCheckInterval = 10; // 10경기마다 성장 체크
