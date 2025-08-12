@@ -1366,7 +1366,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 인터뷰 옵션// 전술 시스템
+    // 전술 시스템
 class TacticSystem {
     constructor() {
         this.tactics = {
