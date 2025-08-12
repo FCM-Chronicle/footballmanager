@@ -1,4 +1,4 @@
-// SNS 시스템
+// SNS 시스템(sns.js)
 class SNSSystem {
     constructor() {
         this.news = {
