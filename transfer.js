@@ -1,4 +1,4 @@
-// 이적 시장 시스템
+// 이적 시장 시스템(transfer.js)
 class TransferSystem {
     constructor() {
         this.basePrice = 500; // 기본가격 500억
