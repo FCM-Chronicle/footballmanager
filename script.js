@@ -312,8 +312,7 @@ const playerDatabase = {
         { name: "가브리에우 바르보사", position: "FW", country: "브라질", age: 28, rating: 80 },
         { name: "페드루", position: "FW", country: "브라질", age: 28, rating: 78 },
         { name: "예페르손 소텔도", position: "FW", country: "베네수엘라", age: 28, rating: 77 }
-    ]
-};    ],
+    ],
 
     "전북 현대": [
         { name: "김정훈", position: "GK", country: "대한민국", age: 24, rating: 72 },
