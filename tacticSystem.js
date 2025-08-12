@@ -1,4 +1,4 @@
-// 전술 시스템
+// 전술 시스템(tacticSystem.js)
 class TacticSystem {
     constructor() {
         this.tactics = {
