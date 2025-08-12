@@ -1308,9 +1308,7 @@ document.addEventListener('DOMContentLoaded', () => {
             displayLeagueTables();
         });
     });
-}); 생성
-        this.generateInterviewOptions(matchData);
-    }
+});
 
     // 인터뷰 옵션 생성
     generateInterviewOptions(matchData) {
@@ -1320,7 +1318,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const scoreDiff = myScore - opponentScore;
         
         let options = [];
-
         if (scoreDiff > 0) { // 승리
             if (scoreDiff >= 3) { // 대승
                 options = [
@@ -1356,7 +1353,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 { text: "이런 경기에서는 승부를 가렸어야 합니다.", morale: -7 }
             ];
         }
-
+        
         container.innerHTML = '';
         options.forEach(option => {
             const optionDiv = document.createElement('div');
@@ -1366,7 +1363,6 @@ document.addEventListener('DOMContentLoaded', () => {
             container.appendChild(optionDiv);
         });
     }
-
     // 전술 시스템
 class TacticSystem {
     constructor() {
