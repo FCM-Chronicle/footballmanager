@@ -921,7 +921,7 @@ const playerDatabase = {
         { name: "루카스", position: "FW", country: "브라질", age: 25, rating: 74 },
         { name: "박장한결", position: "MF", country: "대한민국", age: 21, rating: 68 }
     ]
-        const superLeagueTeams = {
+
     // 1부 리그
     "바르셀로나": [
         { name: "페드리", position: "MF", country: "스페인", age: 22, rating: 92 },
