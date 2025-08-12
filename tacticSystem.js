@@ -780,7 +780,6 @@ class MatchSystem {
                 matchData.awayGoalScorers
             );
         }
-
         // 경기 후 화면 표시
         this.showPostMatch(matchData);
     }
@@ -789,13 +788,15 @@ class MatchSystem {
     showPostMatch(matchData) {
         document.getElementById('liveMatch').classList.add('hidden');
         document.getElementById('postMatch').classList.remove('hidden');
-
         // 결과 표시
         document.getElementById('finalHome').textContent = matchData.homeTeam;
         document.getElementById('finalAway').textContent = matchData.awayTeam;
         document.getElementById('finalScore').textContent = `${matchData.homeScore} - ${matchData.awayScore}`;
+        // 인터뷰 옵션 생성
+        this.generateInterviewOptions(matchData);
+    }
 
-        // 인터뷰 옵션 선택
+    // 인터뷰 옵션 선택
     selectInterviewOption(moraleChange) {
         gameData.teamMorale += moraleChange;
         gameData.teamMorale = Math.max(0, Math.min(100, gameData.teamMorale));
