@@ -1301,68 +1301,67 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // 리그 테이블 탭 이벤트
-    document.querySelectorAll('.table-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            document.querySelectorAll('.table-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            displayLeagueTables();
-        });
+document.querySelectorAll('.table-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.table-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        displayLeagueTables();
     });
 });
 
-    // 인터뷰 옵션 생성
-    generateInterviewOptions(matchData) {
-        const container = document.getElementById('interviewOptions');
-        const myScore = matchData.homeTeam === gameData.selectedTeam ? matchData.homeScore : matchData.awayScore;
-        const opponentScore = matchData.homeTeam === gameData.selectedTeam ? matchData.awayScore : matchData.homeScore;
-        const scoreDiff = myScore - opponentScore;
-        
-        let options = [];
-        if (scoreDiff > 0) { // 승리
-            if (scoreDiff >= 3) { // 대승
-                options = [
-                    { text: "완벽한 경기였습니다! 이것이 우리의 실력입니다!", morale: 15 },
-                    { text: "팀의 잠재력을 보여준 훌륭한 경기였습니다.", morale: 8 },
-                    { text: "좋은 결과지만 방심하지 맙시다.", morale: 3 }
-                ];
-            } else { // 일반 승리
-                options = [
-                    { text: "정말 훌륭한 경기였습니다! 여러분이 자랑스럽습니다!", morale: 10 },
-                    { text: "팀워크가 빛났습니다! 계속 이렇게 해봅시다!", morale: 5 },
-                    { text: "몇몇 실수는 아쉬웠습니다. 다음에는 더 집중해야 합니다.", morale: -5 }
-                ];
-            }
-        } else if (scoreDiff < 0) { // 패배
-            if (scoreDiff <= -3) { // 대패
-                options = [
-                    { text: "이런 치욕적인 경기는 다시는 없어야 합니다!", morale: -15 },
-                    { text: "실망스럽지만 다음 경기를 준비해야 합니다.", morale: -8 },
-                    { text: "어려운 상대였지만 우리도 더 노력해야 합니다.", morale: -3 }
-                ];
-            } else { // 일반 패배
-                options = [
-                    { text: "이번 경기는 정말 실망스러웠습니다. 왜 이렇게 했는지 이해가 되지 않습니다!", morale: -10 },
-                    { text: "이런 경기는 절대 허용할 수 없습니다. 다음에는 더 잘해야 합니다!", morale: -5 },
-                    { text: "힘든 경기를 치렀지만, 여러분의 노력은 인정합니다. 다음에 더 좋은 결과를 기대합니다.", morale: 5 }
-                ];
-            }
-        } else { // 무승부
+// MatchSystem에 메서드 추가
+MatchSystem.prototype.generateInterviewOptions = function(matchData) {
+    const container = document.getElementById('interviewOptions');
+    const myScore = matchData.homeTeam === gameData.selectedTeam ? matchData.homeScore : matchData.awayScore;
+    const opponentScore = matchData.homeTeam === gameData.selectedTeam ? matchData.awayScore : matchData.homeScore;
+    const scoreDiff = myScore - opponentScore;
+    
+    let options = [];
+    if (scoreDiff > 0) { // 승리
+        if (scoreDiff >= 3) { // 대승
             options = [
-                { text: "아쉬운 결과지만 좋은 경기였습니다.", morale: 3 },
-                { text: "더 좋은 결과를 만들어야 했습니다.", morale: -3 },
-                { text: "이런 경기에서는 승부를 가렸어야 합니다.", morale: -7 }
+                { text: "완벽한 경기였습니다! 이것이 우리의 실력입니다!", morale: 15 },
+                { text: "팀의 잠재력을 보여준 훌륭한 경기였습니다.", morale: 8 },
+                { text: "좋은 결과지만 방심하지 맙시다.", morale: 3 }
+            ];
+        } else { // 일반 승리
+            options = [
+                { text: "정말 훌륭한 경기였습니다! 여러분이 자랑스럽습니다!", morale: 10 },
+                { text: "팀워크가 빛났습니다! 계속 이렇게 해봅시다!", morale: 5 },
+                { text: "몇몇 실수는 아쉬웠습니다. 다음에는 더 집중해야 합니다.", morale: -5 }
             ];
         }
-        
-        container.innerHTML = '';
-        options.forEach(option => {
-            const optionDiv = document.createElement('div');
-            optionDiv.className = 'interview-option';
-            optionDiv.textContent = option.text;
-            optionDiv.onclick = () => this.selectInterviewOption(option.morale);
-            container.appendChild(optionDiv);
-        });
+    } else if (scoreDiff < 0) { // 패배
+        if (scoreDiff <= -3) { // 대패
+            options = [
+                { text: "이런 치욕적인 경기는 다시는 없어야 합니다!", morale: -15 },
+                { text: "실망스럽지만 다음 경기를 준비해야 합니다.", morale: -8 },
+                { text: "어려운 상대였지만 우리도 더 노력해야 합니다.", morale: -3 }
+            ];
+        } else { // 일반 패배
+            options = [
+                { text: "이번 경기는 정말 실망스러웠습니다. 왜 이렇게 했는지 이해가 되지 않습니다!", morale: -10 },
+                { text: "이런 경기는 절대 허용할 수 없습니다. 다음에는 더 잘해야 합니다!", morale: -5 },
+                { text: "힘든 경기를 치렀지만, 여러분의 노력은 인정합니다. 다음에 더 좋은 결과를 기대합니다.", morale: 5 }
+            ];
+        }
+    } else { // 무승부
+        options = [
+            { text: "아쉬운 결과지만 좋은 경기였습니다.", morale: 3 },
+            { text: "더 좋은 결과를 만들어야 했습니다.", morale: -3 },
+            { text: "이런 경기에서는 승부를 가렸어야 합니다.", morale: -7 }
+        ];
     }
+    
+    container.innerHTML = '';
+    options.forEach(option => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'interview-option';
+        optionDiv.textContent = option.text;
+        optionDiv.onclick = () => this.selectInterviewOption(option.morale);
+        container.appendChild(optionDiv);
+    });
+};
     // 전술 시스템
 class TacticSystem {
     constructor() {
