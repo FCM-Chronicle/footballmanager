@@ -517,8 +517,17 @@ function startMatchSimulation() {
     runMatchSimulation();
 }
 
-// 경기 시뮬레이션 실행
+// 경기 시뮬레이션 실행 (개선된 버전)
 function runMatchSimulation() {
+    const allTeams = Object.keys(teamNames).filter(team => team !== gameData.selectedTeam);
+    const opponent = allTeams[(gameData.currentMatchday - 1) % allTeams.length];
+    
+    // 전술 효과 적용
+    if (typeof tacticSystem !== 'undefined') {
+        const tacticEffect = tacticSystem.applyTacticToMatch(gameData.currentTactic, opponent);
+        matchStats.tacticEffect = tacticEffect;
+    }
+    
     const matchInterval = setInterval(() => {
         matchStats.minute++;
         
@@ -526,16 +535,436 @@ function runMatchSimulation() {
         document.getElementById('currentTime').textContent = matchStats.minute;
         document.getElementById('matchProgress').style.width = `${(matchStats.minute / 90) * 100}%`;
         
-        // 이벤트 발생 확인
-        processMatchEvents();
+        // 이벤트 발생 확인 (개선된 버전)
+        processEnhancedMatchEvents();
         
         // 90분 완료
         if (matchStats.minute >= 90) {
             clearInterval(matchInterval);
+            const homeScore = matchStats.homeScore;
+            const awayScore = matchStats.awayScore;
+            
+            // 경기 종료 처리
             endMatch();
+            
+            // 추가 업데이트
+            if (typeof postMatchUpdates === 'function') {
+                postMatchUpdates(gameData.selectedTeam, opponent, homeScore, awayScore);
+            }
         }
     }, 1000); // 1초마다 1분씩
 }
+
+// 향상된 경기 이벤트 처리
+function processEnhancedMatchEvents() {
+    const eventRoll = Math.random() * 100;
+    
+    // 전술 효과에 따른 확률 조정
+    let goalProbability = 5;
+    if (matchStats.tacticEffect) {
+        const isPlayerTeamAttacking = Math.random() > 0.5;
+        const tacticModifier = isPlayerTeamAttacking ? 
+            matchStats.tacticEffect.playerBonus : 
+            matchStats.tacticEffect.opponentBonus;
+        goalProbability *= tacticModifier;
+    }
+    
+    if (eventRoll < goalProbability) { // 골
+        processEnhancedGoalEvent();
+    } else if (eventRoll < goalProbability + 5) { // 파울
+        processFoulEvent();
+    } else if (eventRoll < goalProbability + 85) { // 패스 (80%)
+        processPassEvent();
+    } else if (eventRoll < goalProbability + 89) { // 스로인
+        processThrowinEvent();
+    } else if (eventRoll < goalProbability + 92) { // 골킥
+        processGoalkickEvent();
+    } else { // 코너킥
+        processCornerEvent();
+    }
+}
+
+// 향상된 골 이벤트 처리
+function processEnhancedGoalEvent() {
+    const isHomeGoal = Math.random() > 0.5;
+    const team = isHomeGoal ? gameData.selectedTeam : 'opponent';
+    
+    // 득점 선수 선택 (포지션별 확률 적용)
+    let scorer;
+    const positionRoll = Math.random() * 100;
+    
+    if (positionRoll < 70) { // 70% FW
+        scorer = getRandomPlayerByPosition('FW');
+    } else if (positionRoll < 90) { // 20% MF
+        scorer = getRandomPlayerByPosition('MF');
+    } else { // 10% DF
+        scorer = getRandomPlayerByPosition('DF');
+    }
+    
+    // 상대팀 득점인 경우 가상의 선수 생성
+    if (!isHomeGoal) {
+        const allTeams = Object.keys(teamNames).filter(team => team !== gameData.selectedTeam);
+        const opponentTeam = allTeams[(gameData.currentMatchday - 1) % allTeams.length];
+        scorer = getRandomTeamPlayer(opponentTeam);
+    }
+    
+    // 어시스트 (80% 확률)
+    let assist = null;
+    if (Math.random() < 0.8) {
+        if (isHomeGoal) {
+            assist = getRandomPlayerExcept(scorer);
+        } else {
+            const allTeams = Object.keys(teamNames).filter(team => team !== gameData.selectedTeam);
+            const opponentTeam = allTeams[(gameData.currentMatchday - 1) % allTeams.length];
+            assist = getRandomTeamPlayerExcept(opponentTeam, scorer);
+        }
+    }
+    
+    // 점수 업데이트
+    if (isHomeGoal) {
+        matchStats.homeScore++;
+        document.getElementById('homeScore').textContent = matchStats.homeScore;
+        gameData.goalsFor++;
+    } else {
+        matchStats.awayScore++;
+        document.getElementById('awayScore').textContent = matchStats.awayScore;
+        gameData.goalsAgainst++;
+    }
+    
+    // 이벤트 표시
+    const eventText = createEnhancedGoalEventText(scorer, assist, isHomeGoal);
+    addMatchEvent('goal', eventText);
+    
+    // 통계 업데이트 (내 팀 선수만)
+    if (isHomeGoal && scorer) {
+        updatePlayerStats(scorer.name, 'goals', 1);
+        if (assist) {
+            updatePlayerStats(assist.name, 'assists', 1);
+        }
+    }
+}
+
+// 향상된 골 이벤트 텍스트 생성
+function createEnhancedGoalEventText(scorer, assist, isHomeGoal) {
+    const goalTexts = [
+        `⚽ ${scorer.name}의 환상적인 마무리!`,
+        `⚽ ${scorer.name}이 골망을 흔듭니다!`,
+        `⚽ ${scorer.name}의 완벽한 슈팅!`,
+        `⚽ ${scorer.name}이 결정적인 골을 넣었습니다!`,
+        `⚽ ${scorer.name}의 예술적인 골!`,
+        `⚽ ${scorer.name}이 골키퍼를 완전히 따돌렸습니다!`,
+        `⚽ ${scorer.name}의 침착한 마무리!`,
+        `⚽ ${scorer.name}이 완벽한 타이밍에 골을 넣었습니다!`,
+        `⚽ ${scorer.name}의 강력한 슈팅이 골대를 강타합니다!`,
+        `⚽ ${scorer.name}이 수비수들을 제치고 골을 성공시켰습니다!`,
+        `⚽ ${scorer.name}의 번개같은 반응!`,
+        `⚽ ${scorer.name}이 기막힌 골을 터뜨렸습니다!`,
+        `⚽ ${scorer.name}의 절묘한 위치 선정!`,
+        `⚽ ${scorer.name}이 골키퍼의 허를 찔렀습니다!`,
+        `⚽ ${scorer.name}의 환상적인 드리블 돌파 후 골!`
+    ];
+    
+    const assistTexts = [
+        `${assist.name}과 ${scorer.name}의 환상적인 연계플레이!`,
+        `${assist.name}의 완벽한 패스로 ${scorer.name}이 골을 넣었습니다!`,
+        `${assist.name}의 절묘한 어시스트!`,
+        `${assist.name}과 ${scorer.name}의 멋진 콤비네이션!`,
+        `${assist.name}의 정교한 패스가 ${scorer.name}에게 전달됩니다!`,
+        `${assist.name}의 창의적인 플레이로 ${scorer.name}이 골을 성공!`,
+        `${assist.name}과 ${scorer.name}의 완벽한 호흡!`,
+        `${assist.name}의 킬패스를 받은 ${scorer.name}이 골!`,
+        `${assist.name}의 정확한 크로스를 ${scorer.name}이 헤더골로 연결!`,
+        `${assist.name}의 스루패스를 놓치지 않은 ${scorer.name}!`,
+        `${assist.name}과 ${scorer.name}의 원터치 플레이!`,
+        `${assist.name}의 환상적인 시야로 만들어진 골!`,
+        `${assist.name}의 예술적인 백힐패스를 ${scorer.name}이 마무리!`,
+        `${assist.name}과 ${scorer.name}의 교과서적인 연계!`,
+        `${assist.name}의 발목 패스를 ${scorer.name}이 완벽하게 연결!`
+    ];
+    
+    let eventText = goalTexts[Math.floor(Math.random() * goalTexts.length)];
+    
+    if (assist) {
+        eventText = assistTexts[Math.floor(Math.random() * assistTexts.length)];
+    }
+    
+    return eventText;
+}
+
+// 스폰서 시스템 통합
+function integrateSponsorsWithMatch() {
+    // 경기 후 스폰서 계약 기간 감소
+    if (gameData.currentSponsor && gameData.currentSponsor.remainingMatches > 0) {
+        gameData.currentSponsor.remainingMatches--;
+        
+        if (gameData.currentSponsor.remainingMatches === 0) {
+            setTimeout(() => {
+                alert(`${gameData.currentSponsor.name}와의 계약이 만료되었습니다.`);
+                gameData.currentSponsor = null;
+                updateGameUI();
+            }, 3000);
+        }
+    }
+}
+
+// 시즌 진행 체크
+function checkSeasonProgress() {
+    // 모든 팀이 36경기를 완료했는지 확인
+    const allTeamsCompleted = Object.values(leagueTable).every(team => team.played >= 36);
+    
+    if (allTeamsCompleted) {
+        // 시즌 종료 SNS 뉴스 추가
+        if (typeof addSeasonEndNews === 'function') {
+            addSeasonEndNews();
+        }
+        
+        endSeason();
+    }
+}
+
+// 게임 저장 시 모든 시스템 데이터 포함
+function enhancedSaveGame() {
+    const saveData = {
+        gameData: gameData,
+        leagueTable: leagueTable,
+        matchStats: matchStats,
+        playerStats: Array.from(gameData.playerStats.entries())
+    };
+    
+    // 각 시스템의 저장 데이터 추가
+    if (typeof playerGrowthSystem !== 'undefined') {
+        saveData.playerGrowthData = playerGrowthSystem.getSaveData();
+    }
+    
+    if (typeof transferSystem !== 'undefined') {
+        saveData.transferSystemData = transferSystem.getSaveData();
+    }
+    
+    if (typeof tacticSystem !== 'undefined') {
+        saveData.tacticSystemData = tacticSystem.getSaveData();
+    }
+    
+    if (typeof snsSystem !== 'undefined') {
+        saveData.snsSystemData = snsSystem.getSaveData();
+    }
+    
+    const dataStr = JSON.stringify(saveData);
+    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    
+    const teamName = teamNames[gameData.selectedTeam] || 'Unknown';
+    const date = new Date().toISOString().slice(0, 10);
+    link.download = `${teamName}_${date}.json`;
+    
+    link.click();
+}
+
+// 게임 불러오기 시 모든 시스템 데이터 복원
+function enhancedLoadGame(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const saveData = JSON.parse(e.target.result);
+            
+            gameData = saveData.gameData;
+            leagueTable = saveData.leagueTable;
+            matchStats = saveData.matchStats;
+            
+            if (saveData.playerStats) {
+                gameData.playerStats = new Map(saveData.playerStats);
+            }
+            
+            // 각 시스템의 데이터 복원
+            if (saveData.playerGrowthData && typeof playerGrowthSystem !== 'undefined') {
+                playerGrowthSystem.loadSaveData(saveData.playerGrowthData);
+            }
+            
+            if (saveData.transferSystemData && typeof transferSystem !== 'undefined') {
+                transferSystem.loadSaveData(saveData.transferSystemData);
+            }
+            
+            if (saveData.tacticSystemData && typeof tacticSystem !== 'undefined') {
+                tacticSystem.loadSaveData(saveData.tacticSystemData);
+            }
+            
+            if (saveData.snsSystemData && typeof snsSystem !== 'undefined') {
+                snsSystem.loadSaveData(saveData.snsSystemData);
+            }
+            
+            // UI 업데이트
+            updateGameUI();
+            showScreen('gameInterface');
+            showScreen('lobby');
+            
+            // 환영 뉴스가 없다면 추가
+            if (typeof snsSystem !== 'undefined' && snsSystem.newsFeed.length === 0) {
+                addWelcomeNews();
+            }
+            
+            alert('게임을 성공적으로 불러왔습니다!');
+            
+        } catch (error) {
+            alert('저장 파일을 불러오는데 실패했습니다.');
+            console.error('Load error:', error);
+        }
+    };
+    
+    reader.readAsText(file);
+}
+
+// 경기 종료 함수 개선
+function enhancedEndMatch() {
+    // 기존 endMatch 로직
+    const homeScore = matchStats.homeScore;
+    const awayScore = matchStats.awayScore;
+    
+    if (homeScore > awayScore) {
+        gameData.wins++;
+        gameData.points += 3;
+        processSponsorBonus(true);
+    } else if (homeScore < awayScore) {
+        gameData.losses++;
+        processSponsorBonus(false);
+    } else {
+        gameData.draws++;
+        gameData.points += 1;
+    }
+    
+    gameData.matchesPlayed++;
+    gameData.currentMatchday++;
+    
+    // UI 업데이트
+    updateGameUI();
+    
+    // 리그 테이블 업데이트
+    updateOwnTeamInLeague();
+    simulateOtherMatches();
+    
+    // 시스템 통합 업데이트
+    integrateSponsorsWithMatch();
+    
+    // 시즌 진행 체크
+    checkSeasonProgress();
+    
+    // 인터뷰 모달 표시
+    setTimeout(() => {
+        showInterviewModal(homeScore, awayScore);
+    }, 2000);
+    
+    // 선수 성장 처리
+    if (typeof processPostMatchGrowth === 'function') {
+        processPostMatchGrowth();
+    }
+    
+    // 이적 시장 업데이트
+    if (typeof updateTransferMarketPostMatch === 'function') {
+        updateTransferMarketPostMatch();
+    }
+    
+    // 경기 버튼 상태 복원
+    document.getElementById('startMatchBtn').disabled = false;
+    document.getElementById('pauseMatchBtn').disabled = true;
+    
+    console.log('경기 종료:', homeScore, '-', awayScore);
+}
+
+// 시즌 종료 함수 개선
+function enhancedEndSeason() {
+    // 최종 순위 계산
+    const finalPosition = calculateFinalPosition();
+    
+    // 시즌 보상
+    let seasonBonus = 0;
+    if (finalPosition === 1) {
+        seasonBonus = 500; // 우승
+        alert('🏆 축하합니다! 리그 우승을 차지했습니다!');
+    } else if (finalPosition <= 4) {
+        seasonBonus = 300; // 상위권
+        alert('🥉 훌륭합니다! 상위권 진출에 성공했습니다!');
+    } else if (finalPosition <= 12) {
+        seasonBonus = 150; // 중위권
+        alert('📊 중위권 성적을 기록했습니다.');
+    } else {
+        seasonBonus = 50; // 강등권
+        alert('⚠️ 아쉬운 시즌이었습니다. 다음 시즌에는 더 좋은 결과를 기대합니다.');
+    }
+    
+    gameData.teamMoney += seasonBonus;
+    
+    // 시즌 종료 SNS 뉴스
+    if (typeof addSeasonEndNews === 'function') {
+        addSeasonEndNews();
+    }
+    
+    // 시즌 초기화
+    gameData.currentSeason++;
+    gameData.currentMatchday = 1;
+    gameData.matchesPlayed = 0;
+    gameData.wins = 0;
+    gameData.draws = 0;
+    gameData.losses = 0;
+    gameData.goalsFor = 0;
+    gameData.goalsAgainst = 0;
+    gameData.points = 0;
+    
+    // 리그 테이블 초기화
+    initializeLeagueTable();
+    
+    // 선수 나이 증가
+    if (typeof advancePlayerAges === 'function') {
+        advancePlayerAges();
+    }
+    
+    updateGameUI();
+    setNextOpponent();
+}
+
+// 팀 선택 후 모든 시스템 초기화
+function initializeAllSystems(teamId) {
+    gameData.selectedTeam = teamId;
+    
+    // UI 업데이트
+    document.getElementById('teamName').textContent = teamNames[teamId];
+    updateGameUI();
+    
+    // 모든 시스템 초기화
+    if (typeof playerGrowthSystem !== 'undefined') {
+        playerGrowthSystem.initializePlayerGrowth();
+    }
+    
+    if (typeof transferSystem !== 'undefined') {
+        transferSystem.initializeTransferMarket();
+    }
+    
+    if (typeof snsSystem !== 'undefined') {
+        addWelcomeNews();
+    }
+    
+    // 메인 게임 화면으로 이동
+    showScreen('gameInterface');
+    showScreen('lobby');
+    
+    // 스쿼드 초기화
+    initializeSquad();
+    
+    // 다음 상대 설정
+    setNextOpponent();
+    
+    console.log(`${teamNames[teamId]} 선택 완료. 모든 시스템 초기화됨.`);
+}
+
+// 기존 함수들을 향상된 버전으로 교체
+window.saveGame = enhancedSaveGame;
+window.loadGame = enhancedLoadGame;
+window.endMatch = enhancedEndMatch;
+window.endSeason = enhancedEndSeason;
+window.runMatchSimulation = runMatchSimulation;
+window.initializeAllSystems = initializeAllSystems;
 
 // 경기 이벤트 처리
 function processMatchEvents() {
