@@ -1,311 +1,414 @@
-// 전술 시스템(tacticSystem.js)
+// 전술 시스템
 class TacticSystem {
     constructor() {
+        // 전술별 효과와 상성 정의
         this.tactics = {
-            "게겐프레싱": {
-                effective: ["두 줄 수비", "점유율 축구"],
-                ineffective: ["롱볼축구", "카테나치오"],
-                description: "전방 압박으로 상대방의 빌드업을 차단하는 전술"
+            gegenpressing: {
+                name: '게겐프레싱',
+                description: '높은 압박과 빠른 역습',
+                effective: ['twoLineDefense', 'possession'],
+                ineffective: ['longBall', 'catenaccio'],
+                effects: {
+                    attackBonus: 1.2,
+                    defenseBonus: 1.0,
+                    possession: -5, // 점유율 -5%
+                    moraleBonusWin: 2,
+                    moraleBonusLoss: -1
+                }
             },
-            "두 줄 수비": {
-                effective: ["롱볼축구", "침대 축구"],
-                ineffective: ["게겐프레싱", "토탈 풋볼"],
-                description: "촘촘한 수비라인으로 상대 공격을 차단"
+            twoLineDefense: {
+                name: '두 줄 수비',
+                description: '안정적인 수비진 배치',
+                effective: ['longBall', 'parking'],
+                ineffective: ['gegenpressing', 'totalFootball'],
+                effects: {
+                    attackBonus: 0.9,
+                    defenseBonus: 1.3,
+                    possession: -10,
+                    moraleBonusWin: 1,
+                    moraleBonusLoss: -2
+                }
             },
-            "라볼피아나": {
-                effective: ["점유율 축구", "티키타카"],
-                ineffective: ["카테나치오", "롱볼축구"],
-                description: "수비진부터 시작하는 정교한 빌드업 전술"
+            lavolpiana: {
+                name: '라볼피아나',
+                description: '창의적인 공격 전개',
+                effective: ['possession', 'tikitaka'],
+                ineffective: ['catenaccio', 'longBall'],
+                effects: {
+                    attackBonus: 1.3,
+                    defenseBonus: 0.8,
+                    possession: 10,
+                    moraleBonusWin: 3,
+                    moraleBonusLoss: -3
+                }
             },
-            "롱볼축구": {
-                effective: ["침대 축구", "카테나치오"],
-                ineffective: ["게겐프레싱", "티키타카"],
-                description: "긴 패스를 통한 직접적이고 빠른 공격"
+            longBall: {
+                name: '롱볼축구',
+                description: '직접적이고 빠른 공격',
+                effective: ['parking', 'catenaccio'],
+                ineffective: ['gegenpressing', 'tikitaka'],
+                effects: {
+                    attackBonus: 1.1,
+                    defenseBonus: 1.1,
+                    possession: -15,
+                    moraleBonusWin: 1,
+                    moraleBonusLoss: -1
+                }
             },
-            "점유율 축구": {
-                effective: ["티키타카", "라볼피아나"],
-                ineffective: ["롱볼축구", "게겐프레싱"],
-                description: "볼 점유를 통해 경기를 지배하는 전술"
+            possession: {
+                name: '점유율 축구',
+                description: '볼 점유를 통한 경기 지배',
+                effective: ['tikitaka', 'lavolpiana'],
+                ineffective: ['longBall', 'gegenpressing'],
+                effects: {
+                    attackBonus: 1.1,
+                    defenseBonus: 1.0,
+                    possession: 20,
+                    moraleBonusWin: 2,
+                    moraleBonusLoss: -2
+                }
             },
-            "침대 축구": {
-                effective: ["카테나치오", "두 줄 수비"],
-                ineffective: ["게겐프레싱", "토탈 풋볼"],
-                description: "극도로 수비적인 전술로 실점을 최소화"
+            parking: {
+                name: '침대축구',
+                description: '극도로 수비적인 전술',
+                effective: ['catenaccio', 'twoLineDefense'],
+                ineffective: ['gegenpressing', 'totalFootball'],
+                effects: {
+                    attackBonus: 0.6,
+                    defenseBonus: 1.5,
+                    possession: -25,
+                    moraleBonusWin: 1,
+                    moraleBonusLoss: -4
+                }
             },
-            "카테나치오": {
-                effective: ["두 줄 수비", "침대 축구"],
-                ineffective: ["점유율 축구", "토탈 풋볼"],
-                description: "이탈리아식 수비 전술, 조직적인 수비 후 역습"
+            catenaccio: {
+                name: '카테나치오',
+                description: '이탈리아식 수비 전술',
+                effective: ['twoLineDefense', 'parking'],
+                ineffective: ['possession', 'totalFootball'],
+                effects: {
+                    attackBonus: 0.8,
+                    defenseBonus: 1.4,
+                    possession: -20,
+                    moraleBonusWin: 1,
+                    moraleBonusLoss: -3
+                }
             },
-            "토탈 풋볼": {
-                effective: ["티키타카", "게겐프레싱"],
-                ineffective: ["두 줄 수비", "카테나치오"],
-                description: "모든 선수가 공격과 수비를 함께하는 전술"
+            totalFootball: {
+                name: '토탈풋볼',
+                description: '전 선수가 공수를 병행',
+                effective: ['tikitaka', 'gegenpressing'],
+                ineffective: ['twoLineDefense', 'catenaccio'],
+                effects: {
+                    attackBonus: 1.2,
+                    defenseBonus: 0.9,
+                    possession: 5,
+                    moraleBonusWin: 3,
+                    moraleBonusLoss: -2
+                }
             },
-            "티키타카": {
-                effective: ["점유율 축구", "라볼피아나"],
-                ineffective: ["롱볼축구", "침대 축구"],
-                description: "짧은 패스 위주의 정교한 볼 컨트롤 전술"
+            tikitaka: {
+                name: '티키타카',
+                description: '짧은 패스의 연속',
+                effective: ['possession', 'lavolpiana'],
+                ineffective: ['longBall', 'parking'],
+                effects: {
+                    attackBonus: 1.1,
+                    defenseBonus: 0.9,
+                    possession: 25,
+                    moraleBonusWin: 2,
+                    moraleBonusLoss: -2
+                }
             }
         };
 
-        // 팀별 기본 전술
+        // 각 팀의 기본 전술
         this.teamTactics = {
-            // 1부리그
-            "레알 마드리드": "점유율 축구",
-            "바르셀로나": "토탈 풋볼",
-            "맨체스터 시티": "티키타카",
-            "바이에른 뮌헨": "티키타카",
-            "파리 생제르맹": "점유율 축구",
-            "리버풀": "게겐프레싱",
-            "아스널": "두 줄 수비",
-            "AC 밀란": "게겐프레싱",
-            "인터 밀란": "토탈 풋볼",
-            "아틀레티코 마드리드": "카테나치오",
-            "첼시": "롱볼축구",
-            "도르트문트": "게겐프레싱",
-            "나폴리": "침대 축구",
-            "토트넘 홋스퍼": "게겐프레싱",
-            
-            // 2부리그
-            "유벤투스": "카테나치오",
-            "라이프치히": "게겐프레싱",
-            "뉴캐슬 유나이티드": "라볼피아나",
-            "세비야": "점유율 축구",
-            "아약스": "토탈 풋볼",
-            "로마": "롱볼축구",
-            "레버쿠젠": "롱볼축구",
-            "페예노르트": "토탈 풋볼",
-            "리옹": "점유율 축구",
-            "벤피카": "침대 축구",
-            "PSV": "토탈 풋볼",
-            "스포르팅 CP": "점유율 축구",
-            "셀틱": "게겐프레싱",
-            "아스톤 빌라": "두 줄 수비",
-            
-            // 3부리그
-            "FC 서울": "점유율 축구",
-            "전북 현대": "게겐프레싱",
-            "울산 현대": "두 줄 수비",
-            "포항 스틸러스": "롱볼축구",
-            "광주 FC": "침대 축구",
-            "마르세유": "게겐프레싱",
-            "브라질 연합": "티키타카",
-            "아르헨티나 연합": "라볼피아나",
-            "멕시코 연합": "롱볼축구",
-            "미국 연합": "두 줄 수비",
-            "알힐랄": "점유율 축구",
-            "알나스르": "카테나치오",
-            "알이티하드": "침대 축구",
-            "갈라타사라이": "게겐프레싱"
+            manCity: 'tikitaka',
+            liverpool: 'gegenpressing',
+            manUnited: 'possession',
+            arsenal: 'twoLineDefense',
+            chelsea: 'longBall',
+            tottenham: 'gegenpressing',
+            realMadrid: 'possession',
+            barcelona: 'totalFootball',
+            acMilan: 'gegenpressing',
+            inter: 'totalFootball',
+            bayern: 'tikitaka',
+            psg: 'possession',
+            leverkusen: 'longBall',
+            dortmund: 'gegenpressing',
+            newCastle: 'lavolpiana',
+            asRoma: 'longBall',
+            atMadrid: 'catenaccio',
+            napoli: 'parking'
         };
     }
 
-    // 전술 상성 계산
-    calculateTacticAdvantage(myTactic, opponentTactic) {
-        const myTacticData = this.tactics[myTactic];
+    // 전술 효과 계산
+    calculateTacticEffect(playerTactic, opponentTactic) {
+        const playerTacticData = this.tactics[playerTactic];
+        const opponentTacticData = this.tactics[opponentTactic];
         
-        if (myTacticData.effective.includes(opponentTactic)) {
-            return "advantage"; // 유리
-        } else if (myTacticData.ineffective.includes(opponentTactic)) {
-            return "disadvantage"; // 불리
+        if (!playerTacticData || !opponentTacticData) {
+            return {
+                playerBonus: 1.0,
+                opponentBonus: 1.0,
+                playerPossession: 50,
+                description: '일반적인 경기'
+            };
+        }
+
+        let playerBonus = 1.0;
+        let opponentBonus = 1.0;
+        let description = '';
+
+        // 상성 효과 계산
+        if (playerTacticData.effective.includes(opponentTactic)) {
+            playerBonus = 1.15; // 15% 보너스
+            opponentBonus = 0.85; // 상대방 15% 페널티
+            description = `${playerTacticData.name}이(가) ${opponentTacticData.name}에 효과적입니다!`;
+        } else if (playerTacticData.ineffective.includes(opponentTactic)) {
+            playerBonus = 0.85; // 15% 페널티
+            opponentBonus = 1.15; // 상대방 15% 보너스
+            description = `${playerTacticData.name}이(가) ${opponentTacticData.name}에 비효과적입니다.`;
         } else {
-            return "neutral"; // 중립
+            description = '균등한 전술 대결입니다.';
         }
-    }
 
-    // 전술 효과 적용
-    applyTacticEffects(myTactic, opponentTactic) {
-        const advantage = this.calculateTacticAdvantage(myTactic, opponentTactic);
-        
-        let goalProbabilityModifier = 0;
-        let moraleModifier = 0;
-        
-        switch (advantage) {
-            case "advantage":
-                goalProbabilityModifier = 0.5; // 골 확률 +0.5%
-                moraleModifier = 5; // 사기 +5
-                break;
-            case "disadvantage":
-                goalProbabilityModifier = -0.5; // 골 확률 -0.5%
-                moraleModifier = -5; // 사기 -5
-                break;
-            case "neutral":
-                goalProbabilityModifier = 0;
-                moraleModifier = 0;
-                break;
-        }
-        
+        // 점유율 계산
+        const playerPossessionBase = 50 + playerTacticData.effects.possession;
+        const opponentPossessionBase = 50 + opponentTacticData.effects.possession;
+        const totalPossession = playerPossessionBase + opponentPossessionBase;
+        const playerPossession = Math.max(15, Math.min(85, 
+            (playerPossessionBase / totalPossession) * 100));
+
         return {
-            advantage: advantage,
-            goalProbabilityModifier: goalProbabilityModifier,
-            moraleModifier: moraleModifier,
-            description: this.getTacticAdvantageDescription(advantage, myTactic, opponentTactic)
+            playerBonus,
+            opponentBonus,
+            playerPossession: Math.round(playerPossession),
+            description,
+            playerTacticData,
+            opponentTacticData
         };
     }
 
-    // 전술 상성 설명 가져오기
-    getTacticAdvantageDescription(advantage, myTactic, opponentTactic) {
-        switch (advantage) {
-            case "advantage":
-                return `${myTactic}이(가) ${opponentTactic}을(를) 효과적으로 카운터합니다!`;
-            case "disadvantage":
-                return `${opponentTactic}이(가) ${myTactic}을(를) 억제하고 있습니다.`;
-            case "neutral":
-                return `${myTactic} vs ${opponentTactic} - 균등한 전술 대결`;
-            default:
-                return "";
-        }
-    }
-
-    // 팀의 기본 전술 가져오기
-    getTeamTactic(teamName) {
-        return this.teamTactics[teamName] || "게겐프레싱";
-    }
-
-    // AI 팀 전술 변경 (경기 중)
-    shouldAIChangeTactic(scoreDifference, minute) {
-        // 2점 이상 뒤질 때 80% 확률로 하프타임에 변경
-        if (scoreDifference <= -2 && minute === 45 && Math.random() < 0.8) {
-            return true;
-        }
+    // 경기에서 전술 효과 적용
+    applyTacticToMatch(playerTactic, opponentTeam) {
+        const opponentTactic = this.getTeamTactic(opponentTeam);
+        const tacticEffect = this.calculateTacticEffect(playerTactic, opponentTactic);
         
-        // 60분 이후 1점 이상 뒤질 때 40% 확률로 변경
-        if (scoreDifference <= -1 && minute >= 60 && Math.random() < 0.4) {
-            return true;
-        }
-        
-        return false;
-    }
-
-    // 랜덤 전술 선택 (AI용)
-    getRandomTactic(excludeTactic = null) {
-        const tacticNames = Object.keys(this.tactics);
-        let availableTactics = tacticNames;
-        
-        if (excludeTactic) {
-            availableTactics = tacticNames.filter(tactic => tactic !== excludeTactic);
-        }
-        
-        return availableTactics[Math.floor(Math.random() * availableTactics.length)];
-    }
-
-    // 전술 상성표 생성
-    generateTacticMatrix() {
-        const tacticNames = Object.keys(this.tactics);
-        const matrix = [];
-        
-        // 헤더 행
-        const headerRow = ['전술', ...tacticNames];
-        matrix.push(headerRow);
-        
-        // 각 전술별 상성 계산
-        tacticNames.forEach(myTactic => {
-            const row = [myTactic];
+        // matchStats에 전술 효과 저장
+        if (typeof matchStats !== 'undefined') {
+            matchStats.tacticEffect = tacticEffect;
+            matchStats.possession = tacticEffect.playerPossession;
             
-            tacticNames.forEach(opponentTactic => {
-                const advantage = this.calculateTacticAdvantage(myTactic, opponentTactic);
-                let symbol = '';
-                
-                switch (advantage) {
-                    case 'advantage':
-                        symbol = '✅';
-                        break;
-                    case 'disadvantage':
-                        symbol = '❌';
-                        break;
-                    case 'neutral':
-                        symbol = '➖';
-                        break;
-                }
-                
-                row.push(symbol);
-            });
-            
-            matrix.push(row);
-        });
+            console.log(`전술 대결: ${this.tactics[playerTactic].name} vs ${this.tactics[opponentTactic].name}`);
+            console.log(`점유율: ${tacticEffect.playerPossession}% - ${100 - tacticEffect.playerPossession}%`);
+            console.log(tacticEffect.description);
+        }
+
+        return tacticEffect;
+    }
+
+    // 팀의 전술 가져오기
+    getTeamTactic(teamKey) {
+        return this.teamTactics[teamKey] || 'possession'; // 기본값
+    }
+
+    // 팀의 전술 설정
+    setTeamTactic(teamKey, tactic) {
+        if (this.tactics[tactic]) {
+            this.teamTactics[teamKey] = tactic;
+        }
+    }
+
+    // 전술이 골 확률에 미치는 영향 계산
+    getTacticGoalModifier(isPlayerTeam = true) {
+        if (typeof matchStats === 'undefined' || !matchStats.tacticEffect) {
+            return 1.0;
+        }
+
+        const tacticEffect = matchStats.tacticEffect;
         
-        return matrix;
+        if (isPlayerTeam) {
+            return tacticEffect.playerBonus * tacticEffect.playerTacticData.effects.attackBonus;
+        } else {
+            return tacticEffect.opponentBonus * tacticEffect.opponentTacticData.effects.attackBonus;
+        }
+    }
+
+    // 전술이 수비력에 미치는 영향 계산
+    getTacticDefenseModifier(isPlayerTeam = true) {
+        if (typeof matchStats === 'undefined' || !matchStats.tacticEffect) {
+            return 1.0;
+        }
+
+        const tacticEffect = matchStats.tacticEffect;
+        
+        if (isPlayerTeam) {
+            return tacticEffect.playerBonus * tacticEffect.playerTacticData.effects.defenseBonus;
+        } else {
+            return tacticEffect.opponentBonus * tacticEffect.opponentTacticData.effects.defenseBonus;
+        }
+    }
+
+    // 경기 후 전술에 따른 사기 변화
+    applyPostMatchMoraleEffect(won, drawn, lost) {
+        if (!gameData.currentTactic || !this.tactics[gameData.currentTactic]) return;
+
+        const tacticData = this.tactics[gameData.currentTactic];
+        let moraleChange = 0;
+
+        if (won) {
+            moraleChange = tacticData.effects.moraleBonusWin;
+        } else if (lost) {
+            moraleChange = tacticData.effects.moraleBonusLoss;
+        }
+        // 무승부는 사기 변화 없음
+
+        if (moraleChange !== 0) {
+            gameData.teamMorale += moraleChange;
+            gameData.teamMorale = Math.max(0, Math.min(100, gameData.teamMorale));
+            
+            console.log(`전술 효과로 인한 사기 변화: ${moraleChange > 0 ? '+' : ''}${moraleChange}`);
+        }
+    }
+
+    // 전술 정보 가져오기
+    getTacticInfo(tacticKey) {
+        return this.tactics[tacticKey] || null;
+    }
+
+    // 모든 전술 목록 가져오기
+    getAllTactics() {
+        return this.tactics;
     }
 
     // 전술 추천 시스템
-    recommendTactic(opponentTactic) {
+    recommendTactic(opponentTeam) {
+        const opponentTactic = this.getTeamTactic(opponentTeam);
         const recommendations = [];
-        
-        Object.keys(this.tactics).forEach(tactic => {
-            const advantage = this.calculateTacticAdvantage(tactic, opponentTactic);
-            if (advantage === 'advantage') {
+
+        // 상대 전술에 효과적인 전술들 찾기
+        Object.entries(this.tactics).forEach(([tacticKey, tacticData]) => {
+            if (tacticData.effective.includes(opponentTactic)) {
                 recommendations.push({
-                    tactic: tactic,
-                    reason: `${opponentTactic}에 효과적`,
-                    description: this.tactics[tactic].description
+                    tactic: tacticKey,
+                    name: tacticData.name,
+                    reason: `${tacticData.name}은(는) 상대의 ${this.tactics[opponentTactic].name}에 효과적입니다.`
                 });
             }
         });
-        
+
         return recommendations;
     }
 
     // 전술 분석 리포트
-    analyzeTacticPerformance(matches) {
-        const tacticStats = {};
+    getTacticAnalysisReport() {
+        if (!gameData.currentTactic) return null;
+
+        const currentTacticData = this.tactics[gameData.currentTactic];
         
-        matches.forEach(match => {
-            const tactic = match.myTactic;
-            if (!tacticStats[tactic]) {
-                tacticStats[tactic] = {
-                    used: 0,
-                    wins: 0,
-                    draws: 0,
-                    losses: 0,
-                    goalsFor: 0,
-                    goalsAgainst: 0,
-                    advantages: 0,
-                    disadvantages: 0
-                };
-            }
-            
-            tacticStats[tactic].used++;
-            tacticStats[tactic].goalsFor += match.goalsFor;
-            tacticStats[tactic].goalsAgainst += match.goalsAgainst;
-            
-            if (match.result === 'win') tacticStats[tactic].wins++;
-            else if (match.result === 'draw') tacticStats[tactic].draws++;
-            else tacticStats[tactic].losses++;
-            
-            if (match.tacticAdvantage === 'advantage') tacticStats[tactic].advantages++;
-            else if (match.tacticAdvantage === 'disadvantage') tacticStats[tactic].disadvantages++;
-        });
-        
-        return tacticStats;
+        return {
+            currentTactic: {
+                key: gameData.currentTactic,
+                name: currentTacticData.name,
+                description: currentTacticData.description
+            },
+            strengths: currentTacticData.effective.map(t => this.tactics[t].name),
+            weaknesses: currentTacticData.ineffective.map(t => this.tactics[t].name),
+            effects: currentTacticData.effects
+        };
     }
 
-    // 전술별 성과 계산
-    calculateTacticEffectiveness(tacticStats) {
-        const effectiveness = {};
-        
-        Object.keys(tacticStats).forEach(tactic => {
-            const stats = tacticStats[tactic];
-            if (stats.used === 0) return;
-            
-            const winRate = (stats.wins / stats.used) * 100;
-            const avgGoalsFor = stats.goalsFor / stats.used;
-            const avgGoalsAgainst = stats.goalsAgainst / stats.used;
-            const advantageRate = (stats.advantages / stats.used) * 100;
-            
-            effectiveness[tactic] = {
-                winRate: Math.round(winRate * 10) / 10,
-                avgGoalsFor: Math.round(avgGoalsFor * 10) / 10,
-                avgGoalsAgainst: Math.round(avgGoalsAgainst * 10) / 10,
-                advantageRate: Math.round(advantageRate * 10) / 10,
-                gamesPlayed: stats.used,
-                overallRating: Math.round((winRate + advantageRate + (avgGoalsFor * 10) - (avgGoalsAgainst * 10)) / 3)
-            };
-        });
-        
-        return effectiveness;
+    // 저장 데이터 준비
+    getSaveData() {
+        return {
+            teamTactics: this.teamTactics
+        };
+    }
+
+    // 저장 데이터 로드
+    loadSaveData(saveData) {
+        if (saveData && saveData.teamTactics) {
+            this.teamTactics = { ...this.teamTactics, ...saveData.teamTactics };
+        }
     }
 }
 
-// 전술 시스템 인스턴스 생성
+// 전역 전술 시스템 인스턴스
 const tacticSystem = new TacticSystem();
+
+// 전술 선택 함수 (기존 selectTactic 함수 확장)
+function selectTacticAdvanced(tactic) {
+    if (tacticSystem.getTacticInfo(tactic)) {
+        gameData.currentTactic = tactic;
+        updateTacticsDisplay();
+        
+        // 선택된 전술의 상세 정보 표시
+        const tacticInfo = tacticSystem.getTacticInfo(tactic);
+        console.log(`전술 선택: ${tacticInfo.name} - ${tacticInfo.description}`);
+    }
+}
+
+// 전술 추천 표시
+function showTacticRecommendations(opponentTeam) {
+    const recommendations = tacticSystem.recommendTactic(opponentTeam);
+    
+    if (recommendations.length > 0) {
+        let message = "추천 전술:\n\n";
+        recommendations.forEach(rec => {
+            message += `• ${rec.name}: ${rec.reason}\n`;
+        });
+        
+        console.log(message);
+        return recommendations;
+    } else {
+        console.log("특별히 유리한 전술이 없습니다. 자신있는 전술을 사용하세요.");
+        return [];
+    }
+}
+
+// 전술 분석 리포트 표시
+function showTacticAnalysis() {
+    const report = tacticSystem.getTacticAnalysisReport();
+    
+    if (report) {
+        let message = `현재 전술 분석: ${report.currentTactic.name}\n\n`;
+        message += `설명: ${report.currentTactic.description}\n\n`;
+        message += `강점 (효과적인 상대 전술):\n`;
+        report.strengths.forEach(strength => {
+            message += `• ${strength}\n`;
+        });
+        message += `\n약점 (비효과적인 상대 전술):\n`;
+        report.weaknesses.forEach(weakness => {
+            message += `• ${weakness}\n`;
+        });
+        
+        alert(message);
+    }
+}
+
+// 경기 전 전술 적용
+function applyTacticsToUpcomingMatch(opponentTeam) {
+    if (gameData.currentTactic) {
+        const tacticEffect = tacticSystem.applyTacticToMatch(gameData.currentTactic, opponentTeam);
+        
+        // 전술 효과를 UI에 표시
+        setTimeout(() => {
+            alert(`전술 대결: ${tacticSystem.tactics[gameData.currentTactic].name} vs ${tacticSystem.tactics[tacticSystem.getTeamTactic(opponentTeam)].name}\n\n${tacticEffect.description}\n\n예상 점유율: ${tacticEffect.playerPossession}%`);
+        }, 500);
+        
+        return tacticEffect;
+    }
+    
+    return null;
+}
+
+// 전역 함수로 노출
+window.tacticSystem = tacticSystem;
+window.selectTacticAdvanced = selectTacticAdvanced;
+window.showTacticRecommendations = showTacticRecommendations;
+window.showTacticAnalysis = showTacticAnalysis;
+window.applyTacticsToUpcomingMatch = applyTacticsToUpcomingMatch;
