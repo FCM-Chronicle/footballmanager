@@ -1,4 +1,323 @@
-<!DOCTYPE html>
+/* 추가 스타일들은 별도 CSS 파일에서 로드됩니다 */
+    </style>
+    
+    <script>
+        // 페이지 로드 후 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // SNS 이벤트 리스너 설정
+            setupSNSEventListeners();
+            
+            // 게임 시작
+            console.log('Football Manager Game 시작!');
+        });
+        
+        // 경기 시뮬레이션에 전술 효과 적용 (script.js의 함수 확장)
+        function enhancedProcessGoalEvent() {
+            const isHomeGoal = Math.random() > 0.5;
+            
+            // 전술 효과 적용
+            let goalProbability = 5; // 기본 5%
+            if (typeof tacticSystem !== 'undefined') {
+                const tacticModifier = tacticSystem.getTacticGoalModifier(isHomeGoal);
+                goalProbability *= tacticModifier;
+            }
+            
+            // 오버롤에 따른 추가 확률
+            const squad = gameData.squad;
+            const allSquadPlayers = [squad.gk, ...squad.df, ...squad.mf, ...squad.fw].filter(p => p);
+            
+            if (allSquadPlayers.length > 0) {
+                const avgRating = allSquadPlayers.reduce((sum, p) => sum + p.rating, 0) / allSquadPlayers.length;
+                
+                if (avgRating >= 90) goalProbability += 3.5;
+                else if (avgRating >= 85) goalProbability += 2;
+                else if (avgRating >= 75) goalProbability += 1;
+            }
+            
+            // 실제 골 이벤트 처리는 기존 함수 사용
+            if (Math.random() * 100 < goalProbability) {
+                processGoalEvent();
+            }
+        }
+        
+        // 경기 후 모든 시스템 업데이트
+        function postMatchUpdates(homeTeam, awayTeam, homeScore, awayScore) {
+            // 전술 효과에 따른 사기 변화
+            if (typeof tacticSystem !== 'undefined') {
+                const won = homeScore > awayScore;
+                const lost = homeScore < awayScore;
+                const drawn = homeScore === awayScore;
+                tacticSystem.applyPostMatchMoraleEffect(won, drawn, lost);
+            }
+            
+            // SNS 업데이트
+            if (typeof updateSNSAfterMatch === 'function') {
+                const goalScorers = []; // 실제 득점자 목록은 경기 시뮬레이션에서 수집
+                updateSNSAfterMatch(homeTeam, awayTeam, homeScore, awayScore, goalScorers);
+            }
+            
+            // 스폰서 계약 만료 확인
+            if (gameData.currentSponsor) {
+                gameData.currentSponsor.remainingMatches--;
+                if (gameData.currentSponsor.remainingMatches <= 0) {
+                    alert(`${gameData.currentSponsor.name}와의 계약이 만료되었습니다.`);
+                    gameData.currentSponsor = null;
+                }
+            }
+            
+            updateGameUI();
+        }
+        
+        // 파일 업로드 인터페이스 추가
+        function createFileUploadInterface() {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.json';
+            fileInput.style.display = 'none';
+            fileInput.addEventListener('change', loadGame);
+            document.body.appendChild(fileInput);
+            
+            // 저장/불러오기 버튼을 로비에 추가
+            const quickActions = document.querySelector('.quick-actions');
+            if (quickActions) {
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'btn-secondary';
+                saveBtn.textContent = '게임 저장';
+                saveBtn.onclick = saveGame;
+                
+                const loadBtn = document.createElement('button');
+                loadBtn.className = 'btn-secondary';
+                loadBtn.textContent = '게임 불러오기';
+                loadBtn.onclick = () => fileInput.click();
+                
+                quickActions.appendChild(saveBtn);
+                quickActions.appendChild(loadBtn);
+            }
+        }
+        
+        // 페이지 로드 후 파일 업로드 인터페이스 생성
+        window.addEventListener('load', () => {
+            setTimeout(createFileUploadInterface, 2000);
+        });
+    </script>
+</body>
+</html>
+    <script src="sns.js"></script>
+    <style>
+        /* 전체 스타일 설정 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 화면 관리 */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .game-screen {
+            display: none;
+            padding: 20px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .game-screen.active {
+            display: block;
+        }
+
+        /* 팀 선택 화면 */
+        #teamSelection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #teamSelection h1 {
+            font-size: 3em;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .teams-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .team-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .team-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .team-card:hover::before {
+            animation: shine 0.6s ease-out;
+        }
+
+        .team-card h3 {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .team-card p {
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .team-rating {
+            font-size: 1.2em;
+            color: #ffd700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* 메인 네비게이션 */
+        .main-nav {
+            background: rgba(16, 16, 16, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-left h2 {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .team-info {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* 기본 컨테이너 스타일 */
+        .lobby-container, .squad-container, .transfer-container,
+        .league-container, .tactics-container, .sponsors-container, .sns-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 애니메이션 */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
+        /* 추가 스타일들은 별도 CSS 파일에서 로드됩니다 */
+    <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
