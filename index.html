@@ -3,386 +3,543 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>슈퍼리그 축구 매니저</title>
+    <title>Football Manager - 슈퍼리그</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- 팀 선택 화면 -->
-    <div id="teamSelection" class="screen">
-        <div class="team-selection-container">
-            <h1 class="game-title">⚽ 슈퍼리그 축구 매니저 ⚽</h1>
-            <div class="league-selection">
-                <div class="league-tabs">
-                    <button class="league-tab active" data-league="1부">1부 리그</button>
-                    <button class="league-tab" data-league="2부">2부 리그</button>
-                    <button class="league-tab" data-league="3부">3부 리그</button>
-                </div>
-                <div class="teams-grid" id="teamsGrid">
-                    <!-- 팀들이 동적으로 추가됩니다 -->
-                </div>
+    <div id="teamSelection" class="screen active">
+        <h1>팀 선택</h1>
+        <div class="teams-grid">
+            <div class="team-card" data-team="tottenham">
+                <h3>토트넘 홋스퍼</h3>
+                <p>"TO DARE IS TO DO" 손흥민과 함께하는 북런던의 강호. 공격적인 축구로 유명한 팀.</p>
+                <div class="team-rating">★★★★☆</div>
+            </div>
+            <div class="team-card" data-team="liverpool">
+                <h3>리버풀</h3>
+                <p>"YOU WILL NEVER WALK ALONE" 살라와 함께하는 영국 최고의 명문클럽. 게겐프레싱의 대가.</p>
+                <div class="team-rating">★★★★★</div>
+            </div>
+            <div class="team-card" data-team="manCity">
+                <h3>맨체스터 시티</h3>
+                <p>"SUPERBIA IN PROELIA" 홀란드를 앞세운 최강의 공격력. 티키타카의 완성형.</p>
+                <div class="team-rating">★★★★★</div>
+            </div>
+            <div class="team-card" data-team="arsenal">
+                <h3>아스널</h3>
+                <p>"VICTORY THROUGH HARMONY" 사카와 외데고르의 젊은 에너지. 부활하는 런던의 거너스.</p>
+                <div class="team-rating">★★★★☆</div>
+            </div>
+            <div class="team-card" data-team="manUnited">
+                <h3>맨체스터 유나이티드</h3>
+                <p>"GLORY GLORY MAN UNITED" EPL 최다우승 팀. 전설적인 명문클럽의 재건.</p>
+                <div class="team-rating">★★★★☆</div>
+            </div>
+            <div class="team-card" data-team="chelsea">
+                <h3>첼시</h3>
+                <p>"BLUE IS THE COLOUR" 엔조와 젊은 재능들의 조화. 런던 블루스의 새로운 시대.</p>
+                <div class="team-rating">★★★★☆</div>
+            </div>
+            <div class="team-card" data-team="realMadrid">
+                <h3>레알 마드리드</h3>
+                <p>"HALA MADRID" 음바페와 벨링엄의 환상적인 조합. 유럽 최고의 황족 클럽.</p>
+                <div class="team-rating">★★★★★</div>
+            </div>
+            <div class="team-card" data-team="barcelona">
+                <h3>바르셀로나</h3>
+                <p>"VISCA BARCA" 라마시아를 가진 카탈루냐의 자존심. 토탈 풋볼의 대가.</p>
+                <div class="team-rating">★★★★★</div>
+            </div>
+            <div class="team-card" data-team="acMilan">
+                <h3>AC 밀란</h3>
+                <p>"FORZA MILAN" 레앙과 함께하는 이탈리아의 명문. 로쏘네리의 부활.</p>
+                <div class="team-rating">★★★★☆</div>
+            </div>
+            <div class="team-card" data-team="inter">
+                <h3>인터 밀란</h3>
+                <p>"AMALA" 마르쿠스 튀람의 득점력. 네라주리의 강력한 공격진.</p>
+                <div class="team-rating">★★★★☆</div>
+            </div>
+            <div class="team-card" data-team="bayern">
+                <h3>바이에른 뮌헨</h3>
+                <p>"MIA SAN MIA" 득점 머신 해리 케인과 함께하는 독일 축구의 왕자.</p>
+                <div class="team-rating">★★★★★</div>
+            </div>
+            <div class="team-card" data-team="psg">
+                <h3>파리 생제르맹</h3>
+                <p>"ICI C'EST PARIS" 크바라츠헬리아와 이강인의 조합. 프랑스 수도의 자존심.</p>
+                <div class="team-rating">★★★★★</div>
+            </div>
+            <div class="team-card" data-team="leverkusen">
+                <h3>바이어 레버쿠젠</h3>
+                <p>"WERKSELF" 비르츠와 함께하는 젊은 에너지. 독일의 떠오르는 강호.</p>
+                <div class="team-rating">★★★★☆</div>
+            </div>
+            <div class="team-card" data-team="dortmund">
+                <h3>보루시아 도르트문트</h3>
+                <p>"ECHTE LIEBE" 게겐프레싱의 완성형. 독일 축구의 젊은 피.</p>
+                <div class="team-rating">★★★★☆</div>
+            </div>
+            <div class="team-card" data-team="newCastle">
+                <h3>뉴캐슬 유나이티드</h3>
+                <p>"THE MAGPIES" 이사크와 고든의 스피드. 영국 북동부의 야심찬 언더독.</p>
+                <div class="team-rating">★★★☆☆</div>
+            </div>
+            <div class="team-card" data-team="asRoma">
+                <h3>AS 로마</h3>
+                <p>"FORZA ROMA" 디발라의 마법같은 플레이. 이탈리아 수도의 늑대들.</p>
+                <div class="team-rating">★★★☆☆</div>
+            </div>
+            <div class="team-card" data-team="atMadrid">
+                <h3>아틀레티코 마드리드</h3>
+                <p>"LOS COLCHONEROS" 그리즈만 알바레즈 듀오의 클래스. 빗장수비의 강력함.</p>
+                <div class="team-rating">★★★★☆</div>
+            </div>
+            <div class="team-card" data-team="napoli">
+                <h3>나폴리</h3>
+                <p>"FORZA NAPOLI SEMPRE" 스콧 맥토미니와 함께하는 남부 이탈리아의 열정. 파르테노페이의 꿈.</p>
+                <div class="team-rating">★★★☆☆</div>
             </div>
         </div>
     </div>
 
     <!-- 메인 게임 화면 -->
-    <div id="mainGame" class="screen hidden">
-        <!-- 헤더 -->
-        <div class="header">
-            <div class="team-info">
-                <h2 id="teamName">팀명</h2>
-                <span id="currentLeague" class="league-badge">리그</span>
-            </div>
-            <div class="team-stats">
-                <div class="stat">
-                    <span class="stat-label">자금:</span>
-                    <span id="teamMoney" class="stat-value">0억원</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">사기:</span>
-                    <span id="teamMorale" class="stat-value">50/100</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">스폰서:</span>
-                    <span id="currentSponsor" class="stat-value">없음</span>
+    <div id="gameInterface" class="screen">
+        <!-- 네비게이션 바 -->
+        <nav class="main-nav">
+            <div class="nav-left">
+                <h2 id="teamName">팀 이름</h2>
+                <div class="team-info">
+                    <span>자금: <span id="teamMoney">1000</span>억</span>
+                    <span>사기: <span id="teamMorale">50</span></span>
                 </div>
             </div>
-        </div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" data-screen="lobby">로비</button>
+                <button class="nav-tab" data-screen="squad">스쿼드</button>
+                <button class="nav-tab" data-screen="match">경기</button>
+                <button class="nav-tab" data-screen="transfer">이적시장</button>
+                <button class="nav-tab" data-screen="league">리그테이블</button>
+                <button class="nav-tab" data-screen="stats">통계</button>
+                <button class="nav-tab" data-screen="tactics">전술</button>
+                <button class="nav-tab" data-screen="sponsors">스폰서</button>
+                <button class="nav-tab" data-screen="sns">SNS</button>
+            </div>
+        </nav>
 
-        <!-- 탭 네비게이션 -->
-        <div class="tab-navigation">
-            <button class="tab-btn active" data-tab="lobby">로비</button>
-            <button class="tab-btn" data-tab="squad">스쿼드</button>
-            <button class="tab-btn" data-tab="match">경기</button>
-            <button class="tab-btn" data-tab="transfer">이적시장</button>
-            <button class="tab-btn" data-tab="statistics">통계</button>
-            <button class="tab-btn" data-tab="sns">SNS</button>
-            <button class="tab-btn" data-tab="settings">설정</button>
-        </div>
-
-        <!-- 탭 컨텐츠 -->
-        <div class="tab-content">
-            <!-- 로비 탭 -->
-            <div id="lobby" class="tab-pane active">
-                <div class="lobby-container">
-                    <div class="lobby-section">
+        <!-- 로비 화면 -->
+        <div id="lobby" class="game-screen active">
+            <div class="lobby-container">
+                <div class="lobby-header">
+                    <h1>환영합니다, 감독님!</h1>
+                    <div class="season-info">
+                        <h3>시즌 1 - <span id="currentMatchday">1</span>경기차</h3>
+                    </div>
+                </div>
+                
+                <div class="lobby-grid">
+                    <div class="lobby-card">
+                        <h3>팀 정보</h3>
+                        <div class="team-stats">
+                            <p>팀 레이팅: <span id="teamOverallRating">75</span></p>
+                            <p>경기 수: <span id="matchesPlayed">0</span></p>
+                            <p>승: <span id="wins">0</span> 무: <span id="draws">0</span> 패: <span id="losses">0</span></p>
+                            <p>득점: <span id="goalsFor">0</span> 실점: <span id="goalsAgainst">0</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="lobby-card">
                         <h3>다음 경기</h3>
-                        <div class="next-match" id="nextMatch">
-                            <div class="match-teams">
-                                <span id="homeTeam">홈팀</span> vs <span id="awayTeam">원정팀</span>
-                            </div>
-                            <div class="match-info">
-                                <span id="matchWeek">1라운드</span> | <span id="currentLeagueName">리그명</span>
-                            </div>
+                        <div id="nextMatch">
+                            <p>상대: <span id="nextOpponent">-</span></p>
+                            <p>홈/원정: <span id="nextVenue">-</span></p>
+                            <button id="playMatchBtn" class="btn-primary">경기 시작</button>
                         </div>
                     </div>
-                    <div class="lobby-section">
-                        <h3>팀 상태</h3>
-                        <div class="team-status">
-                            <div class="status-item">
-                                <span class="status-label">현재 순위:</span>
-                                <span id="currentPosition" class="status-value">-위</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">경기수:</span>
-                                <span id="matchesPlayed" class="status-value">0경기</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">시즌:</span>
-                                <span id="currentSeason" class="status-value">1시즌</span>
-                            </div>
+                    
+                    <div class="lobby-card">
+                        <h3>리그 순위</h3>
+                        <div id="currentPosition">
+                            <p>현재 순위: <span id="leaguePosition">-</span>위</p>
+                            <p>승점: <span id="points">0</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="lobby-card">
+                        <h3>스폰서</h3>
+                        <div id="currentSponsor">
+                            <p>현재 스폰서: <span id="sponsorName">없음</span></p>
+                            <p>승리 보너스: <span id="sponsorWinBonus">0</span>억</p>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 스쿼드 탭 -->
-            <div id="squad" class="tab-pane">
-                <div class="squad-container">
-                    <h3>스쿼드 관리</h3>
-                    <div class="formation-field">
-                        <div class="field-line forward-line">
-                            <div class="player-position" data-position="FW1">
-                                <div class="player-slot" data-index="0">FW</div>
-                            </div>
-                            <div class="player-position" data-position="FW2">
-                                <div class="player-slot" data-index="1">FW</div>
-                            </div>
-                            <div class="player-position" data-position="FW3">
-                                <div class="player-slot" data-index="2">FW</div>
-                            </div>
-                        </div>
-                        <div class="field-line midfield-line">
-                            <div class="player-position" data-position="MF1">
-                                <div class="player-slot" data-index="3">MF</div>
-                            </div>
-                            <div class="player-position" data-position="MF2">
-                                <div class="player-slot" data-index="4">MF</div>
-                            </div>
-                            <div class="player-position" data-position="MF3">
-                                <div class="player-slot" data-index="5">MF</div>
-                            </div>
-                        </div>
-                        <div class="field-line defense-line">
-                            <div class="player-position" data-position="DF1">
-                                <div class="player-slot" data-index="6">DF</div>
-                            </div>
-                            <div class="player-position" data-position="DF2">
-                                <div class="player-slot" data-index="7">DF</div>
-                            </div>
-                            <div class="player-position" data-position="DF3">
-                                <div class="player-slot" data-index="8">DF</div>
-                            </div>
-                            <div class="player-position" data-position="DF4">
-                                <div class="player-slot" data-index="9">DF</div>
-                            </div>
-                        </div>
-                        <div class="field-line goalkeeper-line">
-                            <div class="player-position" data-position="GK">
-                                <div class="player-slot" data-index="10">GK</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bench-container">
-                        <h4>벤치</h4>
-                        <div class="bench-players" id="benchPlayers">
-                            <!-- 벤치 선수들이 동적으로 추가됩니다 -->
-                        </div>
-                    </div>
+                
+                <div class="quick-actions">
+                    <button class="btn-secondary" onclick="showScreen('squad')">스쿼드 관리</button>
+                    <button class="btn-secondary" onclick="showScreen('transfer')">이적시장</button>
+                    <button class="btn-secondary" onclick="showScreen('tactics')">전술 설정</button>
                 </div>
             </div>
+        </div>
 
-            <!-- 경기 탭 -->
-            <div id="match" class="tab-pane">
-                <div class="match-container">
-                    <div class="pre-match" id="preMatch">
-                        <h3>경기 준비</h3>
-                        <div class="match-preview">
-                            <div class="team-preview">
-                                <div class="team-name" id="preMatchHome">우리팀</div>
-                                <div class="team-rating" id="preMatchHomeRating">평점: 0</div>
-                            </div>
-                            <div class="vs">VS</div>
-                            <div class="team-preview">
-                                <div class="team-name" id="preMatchAway">상대팀</div>
-                                <div class="team-rating" id="preMatchAwayRating">평점: 0</div>
-                            </div>
-                        </div>
-                        <div class="tactics-selection">
-                            <h4>전술 선택</h4>
-                            <select id="tacticSelect">
-                                <option value="게겐프레싱">게겐프레싱</option>
-                                <option value="두 줄 수비">두 줄 수비</option>
-                                <option value="라볼피아나">라볼피아나</option>
-                                <option value="롱볼축구">롱볼축구</option>
-                                <option value="점유율 축구">점유율 축구</option>
-                                <option value="침대 축구">침대 축구</option>
-                                <option value="카테나치오">카테나치오</option>
-                                <option value="토탈 풋볼">토탈 풋볼</option>
-                                <option value="티키타카">티키타카</option>
-                            </select>
-                        </div>
-                        <button id="startMatch" class="start-match-btn">경기 시작</button>
-                    </div>
-                    <div class="live-match hidden" id="liveMatch">
-                        <div class="match-header">
-                            <div class="match-score">
-                                <span id="homeScore">0</span> - <span id="awayScore">0</span>
-                            </div>
-                            <div class="match-time">
-                                <span id="matchTime">0</span>'
-                            </div>
-                        </div>
-                        <div class="match-events" id="matchEvents">
-                            <!-- 경기 이벤트들이 동적으로 추가됩니다 -->
-                        </div>
-                    </div>
-                    <div class="post-match hidden" id="postMatch">
-                        <div class="match-result">
-                            <h3>경기 종료</h3>
-                            <div class="final-score">
-                                <span id="finalHome">우리팀</span>
-                                <span id="finalScore">0 - 0</span>
-                                <span id="finalAway">상대팀</span>
-                            </div>
-                        </div>
-                        <div class="interview-section">
-                            <h4>경기 후 인터뷰</h4>
-                            <div class="interview-options" id="interviewOptions">
-                                <!-- 인터뷰 선택지들이 동적으로 추가됩니다 -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 이적시장 탭 -->
-            <div id="transfer" class="tab-pane">
-                <div class="transfer-container">
-                    <div class="transfer-header">
-                        <h3>이적시장</h3>
-                        <div class="transfer-filters">
-                            <select id="transferLeagueFilter">
-                                <option value="all">전체 리그</option>
-                                <option value="1부">1부 리그</option>
-                                <option value="2부">2부 리그</option>
-                                <option value="3부">3부 리그</option>
-                            </select>
-                            <select id="transferPositionFilter">
-                                <option value="all">전체 포지션</option>
-                                <option value="GK">골키퍼</option>
-                                <option value="DF">수비수</option>
-                                <option value="MF">미드필더</option>
-                                <option value="FW">공격수</option>
-                            </select>
-                            <button id="refreshTransferMarket">시장 새로고침</button>
-                        </div>
-                    </div>
-                    <div class="transfer-market" id="transferMarket">
-                        <!-- 이적 가능한 선수들이 동적으로 추가됩니다 -->
-                    </div>
-                    <div class="my-players-section">
-                        <h4>내 선수 관리</h4>
-                        <div class="my-players" id="myPlayers">
-                            <!-- 내 선수들이 동적으로 추가됩니다 -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 통계 탭 -->
-            <div id="statistics" class="tab-pane">
-                <div class="statistics-container">
-                    <div class="stats-tabs">
-                        <button class="stats-tab active" data-stats="tables">리그 순위</button>
-                        <button class="stats-tab" data-stats="scorers">득점왕</button>
-                        <button class="stats-tab" data-stats="assisters">도움왕</button>
-                    </div>
-                    <div class="stats-content">
-                        <div id="tables" class="stats-pane active">
-                            <div class="league-tables">
-                                <div class="table-tabs">
-                                    <button class="table-tab active" data-table="1부">1부 리그</button>
-                                    <button class="table-tab" data-table="2부">2부 리그</button>
-                                    <button class="table-tab" data-table="3부">3부 리그</button>
-                                </div>
-                                <div class="table-container" id="tableContainer">
-                                    <!-- 리그 테이블이 동적으로 추가됩니다 -->
+        <!-- 스쿼드 화면 -->
+        <div id="squad" class="game-screen">
+            <div class="squad-container">
+                <div class="formation-area">
+                    <div class="field-background">
+                        <!-- 4-3-3 포메이션 -->
+                        <div class="position-row goalkeeper">
+                            <div class="position-slot" data-position="gk" data-index="0">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('gk', 0)">
+                                    <span>GK</span>
                                 </div>
                             </div>
                         </div>
-                        <div id="scorers" class="stats-pane">
-                            <div class="scorers-list" id="scorersList">
-                                <!-- 득점왕 순위가 동적으로 추가됩니다 -->
+                        
+                        <div class="position-row defense">
+                            <div class="position-slot" data-position="df" data-index="0">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('df', 0)">
+                                    <span>DF</span>
+                                </div>
+                            </div>
+                            <div class="position-slot" data-position="df" data-index="1">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('df', 1)">
+                                    <span>DF</span>
+                                </div>
+                            </div>
+                            <div class="position-slot" data-position="df" data-index="2">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('df', 2)">
+                                    <span>DF</span>
+                                </div>
+                            </div>
+                            <div class="position-slot" data-position="df" data-index="3">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('df', 3)">
+                                    <span>DF</span>
+                                </div>
                             </div>
                         </div>
-                        <div id="assisters" class="stats-pane">
-                            <div class="assisters-list" id="assistersList">
-                                <!-- 도움왕 순위가 동적으로 추가됩니다 -->
+                        
+                        <div class="position-row midfield">
+                            <div class="position-slot" data-position="mf" data-index="0">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('mf', 0)">
+                                    <span>MF</span>
+                                </div>
+                            </div>
+                            <div class="position-slot" data-position="mf" data-index="1">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('mf', 1)">
+                                    <span>MF</span>
+                                </div>
+                            </div>
+                            <div class="position-slot" data-position="mf" data-index="2">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('mf', 2)">
+                                    <span>MF</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="position-row forward">
+                            <div class="position-slot" data-position="fw" data-index="0">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('fw', 0)">
+                                    <span>FW</span>
+                                </div>
+                            </div>
+                            <div class="position-slot" data-position="fw" data-index="1">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('fw', 1)">
+                                    <span>FW</span>
+                                </div>
+                            </div>
+                            <div class="position-slot" data-position="fw" data-index="2">
+                                <div class="player-card empty" onclick="selectPlayerForPosition('fw', 2)">
+                                    <span>FW</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- SNS 탭 -->
-            <div id="sns" class="tab-pane">
-                <div class="sns-container">
-                    <div class="sns-header">
-                        <h3>축구 뉴스</h3>
-                        <div class="sns-filters">
-                            <button class="sns-filter active" data-filter="all">전체</button>
-                            <button class="sns-filter" data-filter="1부">1부 리그</button>
-                            <button class="sns-filter" data-filter="2부">2부 리그</button>
-                            <button class="sns-filter" data-filter="3부">3부 리그</button>
-                        </div>
+                
+                <div class="players-list">
+                    <h3>선수 목록</h3>
+                    <div class="position-filter">
+                        <button class="filter-btn active" data-filter="all">전체</button>
+                        <button class="filter-btn" data-filter="GK">골키퍼</button>
+                        <button class="filter-btn" data-filter="DF">수비수</button>
+                        <button class="filter-btn" data-filter="MF">미드필더</button>
+                        <button class="filter-btn" data-filter="FW">공격수</button>
                     </div>
-                    <div class="news-feed" id="newsFeed">
-                        <!-- 뉴스 카드들이 동적으로 추가됩니다 -->
+                    <div id="playersList" class="players-grid">
+                        <!-- 선수 목록이 여기에 동적으로 생성됩니다 -->
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- 설정 탭 -->
-            <div id="settings" class="tab-pane">
-                <div class="settings-container">
-                    <div class="settings-section">
-                        <h3>전술 상성표</h3>
-                        <div class="tactics-matrix" id="tacticsMatrix">
-                            <!-- 전술 상성표가 동적으로 추가됩니다 -->
+        <!-- 경기 화면 -->
+        <div id="match" class="game-screen">
+            <div class="match-container">
+                <div class="match-header">
+                    <div class="team-info">
+                        <h3 id="homeTeam">홈팀</h3>
+                    </div>
+                    <div class="match-score">
+                        <span id="homeScore">0</span> - <span id="awayScore">0</span>
+                    </div>
+                    <div class="team-info">
+                        <h3 id="awayTeam">원정팀</h3>
+                    </div>
+                </div>
+                
+                <div class="match-time">
+                    <div class="time-display">
+                        <span id="currentTime">0</span>'
+                        <div class="progress-bar">
+                            <div class="progress" id="matchProgress"></div>
                         </div>
                     </div>
-                    <div class="settings-section">
-                        <h3>선수 포텐셜</h3>
-                        <div class="potential-list" id="potentialList">
-                            <!-- 선수 포텐셜 정보가 동적으로 추가됩니다 -->
+                </div>
+                
+                <div class="match-events" id="matchEvents">
+                    <!-- 경기 이벤트가 여기에 표시됩니다 -->
+                </div>
+                
+                <div class="match-controls">
+                    <button id="startMatchBtn" class="btn-primary">경기 시작</button>
+                    <button id="pauseMatchBtn" class="btn-secondary" disabled>일시정지</button>
+                    <button id="speedToggleBtn" class="btn-secondary">속도 x1</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 이적시장 화면 -->
+        <div id="transfer" class="game-screen">
+            <div class="transfer-container">
+                <div class="transfer-search">
+                    <h3>선수 검색</h3>
+                    <div class="search-filters">
+                        <input type="text" id="nameSearch" placeholder="선수 이름" />
+                        <select id="positionFilter">
+                            <option value="">모든 포지션</option>
+                            <option value="GK">골키퍼</option>
+                            <option value="DF">수비수</option>
+                            <option value="MF">미드필더</option>
+                            <option value="FW">공격수</option>
+                        </select>
+                        <input type="number" id="minRating" placeholder="최소 능력치" min="50" max="99" />
+                        <input type="number" id="maxAge" placeholder="최대 나이" min="16" max="40" />
+                        <button onclick="searchPlayers()" class="btn-primary">검색</button>
+                    </div>
+                </div>
+                
+                <div id="transferPlayers" class="transfer-list">
+                    <!-- 이적 가능한 선수들이 여기에 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 리그 테이블 화면 -->
+        <div id="league" class="game-screen">
+            <div class="league-container">
+                <h3>리그 순위표</h3>
+                <div class="league-table">
+                    <table id="leagueTable">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>팀</th>
+                                <th>경기수</th>
+                                <th>승</th>
+                                <th>무</th>
+                                <th>패</th>
+                                <th>득점</th>
+                                <th>실점</th>
+                                <th>득실차</th>
+                                <th>승점</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 리그 테이블 데이터가 여기에 표시됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="stats-section">
+                    <div class="top-scorers">
+                        <h3>득점왕</h3>
+                        <div id="topScorers">
+                            <!-- 득점왕 목록 -->
                         </div>
                     </div>
-                    <div class="settings-section">
-                        <h3>승강제 정보</h3>
-                        <div class="promotion-info">
-                            <div class="promo-rule">
-                                <h4>1부 리그</h4>
-                                <p>13-14위: 자동 강등 → 2부 리그</p>
-                            </div>
-                            <div class="promo-rule">
-                                <h4>2부 리그</h4>
-                                <p>1-2위: 자동 승격 → 1부 리그</p>
-                                <p>13-14위: 자동 강등 → 3부 리그</p>
-                            </div>
-                            <div class="promo-rule">
-                                <h4>3부 리그</h4>
-                                <p>1-2위: 자동 승격 → 2부 리그</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="settings-section">
-                        <h3>게임 관리</h3>
-                        <div class="game-controls">
-                            <button id="saveGame">게임 저장</button>
-                            <input type="file" id="loadGame" accept=".json" style="display: none;">
-                            <button onclick="document.getElementById('loadGame').click()">게임 불러오기</button>
+                    <div class="top-assists">
+                        <h3>도움왕</h3>
+                        <div id="topAssists">
+                            <!-- 도움왕 목록 -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 모달들 -->
-    <div id="playerSelectModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>선수 선택</h3>
-                <button class="close-modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="player-list" id="modalPlayerList">
-                    <!-- 선수 목록이 동적으로 추가됩니다 -->
+        <!-- 통계 화면 -->
+        <div id="stats" class="game-screen">
+            <div class="stats-container">
+                <h3>팀 통계</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>시즌 기록</h4>
+                        <div class="stat-item">
+                            <span>총 경기수:</span>
+                            <span id="totalMatches">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>승률:</span>
+                            <span id="winRate">0%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>평균 득점:</span>
+                            <span id="avgGoalsFor">0.0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span>평균 실점:</span>
+                            <span id="avgGoalsAgainst">0.0</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="sponsorModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
+        <!-- 전술 화면 -->
+        <div id="tactics" class="game-screen">
+            <div class="tactics-container">
+                <h3>전술 설정</h3>
+                <div class="tactics-grid">
+                    <div class="tactic-card" data-tactic="gegenpressing">
+                        <h4>게겐프레싱</h4>
+                        <p>높은 압박과 빠른 역습</p>
+                        <div class="tactic-effects">
+                            <span class="effective">효과적: 두 줄 수비, 점유율 축구</span>
+                            <span class="ineffective">비효과적: 롱볼축구, 카테나치오</span>
+                        </div>
+                    </div>
+                    <div class="tactic-card" data-tactic="twoLineDefense">
+                        <h4>두 줄 수비</h4>
+                        <p>안정적인 수비진 배치</p>
+                        <div class="tactic-effects">
+                            <span class="effective">효과적: 롱볼축구, 침대축구</span>
+                            <span class="ineffective">비효과적: 게겐프레싱, 토탈풋볼</span>
+                        </div>
+                    </div>
+                    <div class="tactic-card" data-tactic="lavolpiana">
+                        <h4>라볼피아나</h4>
+                        <p>창의적인 공격 전개</p>
+                        <div class="tactic-effects">
+                            <span class="effective">효과적: 점유율축구, 티키타카</span>
+                            <span class="ineffective">비효과적: 카테나치오, 롱볼축구</span>
+                        </div>
+                    </div>
+                    <div class="tactic-card" data-tactic="longBall">
+                        <h4>롱볼축구</h4>
+                        <p>직접적이고 빠른 공격</p>
+                        <div class="tactic-effects">
+                            <span class="effective">효과적: 침대축구, 카테나치오</span>
+                            <span class="ineffective">비효과적: 게겐프레싱, 티키타카</span>
+                        </div>
+                    </div>
+                    <div class="tactic-card" data-tactic="possession">
+                        <h4>점유율 축구</h4>
+                        <p>볼 점유를 통한 경기 지배</p>
+                        <div class="tactic-effects">
+                            <span class="effective">효과적: 티키타카, 라볼피아나</span>
+                            <span class="ineffective">비효과적: 롱볼축구, 게겐프레싱</span>
+                        </div>
+                    </div>
+                    <div class="tactic-card" data-tactic="parking">
+                        <h4>침대축구</h4>
+                        <p>극도로 수비적인 전술</p>
+                        <div class="tactic-effects">
+                            <span class="effective">효과적: 카테나치오, 두 줄 수비</span>
+                            <span class="ineffective">비효과적: 게겐프레싱, 토탈풋볼</span>
+                        </div>
+                    </div>
+                    <div class="tactic-card" data-tactic="catenaccio">
+                        <h4>카테나치오</h4>
+                        <p>이탈리아식 수비 전술</p>
+                        <div class="tactic-effects">
+                            <span class="effective">효과적: 두 줄 수비, 침대축구</span>
+                            <span class="ineffective">비효과적: 점유율축구, 토탈풋볼</span>
+                        </div>
+                    </div>
+                    <div class="tactic-card" data-tactic="totalFootball">
+                        <h4>토탈풋볼</h4>
+                        <p>전 선수가 공수를 병행</p>
+                        <div class="tactic-effects">
+                            <span class="effective">효과적: 티키타카, 게겐프레싱</span>
+                            <span class="ineffective">비효과적: 두 줄 수비, 카테나치오</span>
+                        </div>
+                    </div>
+                    <div class="tactic-card" data-tactic="tikitaka">
+                        <h4>티키타카</h4>
+                        <p>짧은 패스의 연속</p>
+                        <div class="tactic-effects">
+                            <span class="effective">효과적: 점유율축구, 라볼피아나</span>
+                            <span class="ineffective">비효과적: 롱볼축구, 침대축구</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="current-tactic">
+                    <h4>현재 전술: <span id="currentTactic">게겐프레싱</span></h4>
+                    <p id="tacticDescription">높은 압박과 빠른 역습으로 상대를 압도합니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 스폰서 화면 -->
+        <div id="sponsors" class="game-screen">
+            <div class="sponsors-container">
                 <h3>스폰서 계약</h3>
-                <button class="close-modal">&times;</button>
+                <div id="sponsorsList" class="sponsors-grid">
+                    <!-- 스폰서 목록이 여기에 표시됩니다 -->
+                </div>
+                
+                <div class="current-sponsor-info">
+                    <h4>현재 스폰서 계약</h4>
+                    <div id="currentSponsorInfo">
+                        <p>계약된 스폰서가 없습니다.</p>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body">
-                <div class="sponsor-list" id="sponsorList">
-                    <!-- 스폰서 목록이 동적으로 추가됩니다 -->
+        </div>
+
+        <!-- SNS 화면 -->
+        <div id="sns" class="game-screen">
+            <div class="sns-container">
+                <h3>축구 뉴스 & SNS</h3>
+                <div class="news-filter">
+                    <button class="filter-btn active" data-filter="all">전체</button>
+                    <button class="filter-btn" data-filter="transfer">이적</button>
+                    <button class="filter-btn" data-filter="match">경기결과</button>
+                    <button class="filter-btn" data-filter="rumor">루머</button>
+                </div>
+                <div id="newsFeed" class="news-feed">
+                    <!-- SNS 뉴스 피드가 여기에 표시됩니다 -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 스크립트 파일들 -->
-<script src="tacticSystem.js"></script>
-<script src="playerGrowth.js"></script>
-<script src="matchSystem.js"></script>  <!-- 수정된 버전 -->
-<script src="transfer.js"></script>
-<script src="sns.js"></script>
-<script src="script.js"></script>  <!-- 마지막에 로드 -->
-</body>
-</html>
+    <!-- 인터뷰 모달 -->
+    <div id="interviewModal" class="modal">
+        <div class="modal-content">
+            <h3>경기 후 인터뷰</h3>
+            <p id="interviewQuestion">질문이 여기에 표시됩니다.</p>
+            <div id="interviewOptions" class="interview-options">
+                <!-- 인터뷰 선택지들이 여기에 표시됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 게임 스크립트들 -->
+    <script src="script.js"></script>
+    <script src="playerGrowth.js"></script>
+    <script src="tacticSystem.js"></script>
+    <script src="transfer.js"></script>
