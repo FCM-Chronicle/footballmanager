@@ -149,33 +149,9 @@ function setupEventListeners() {
     });
 }
 
-// 팀 선택
+// 팀 선택 (통합 함수로 교체)
 function selectTeam(teamId) {
-    gameData.selectedTeam = teamId;
-    
-    // UI 업데이트
-    document.getElementById('teamName').textContent = teamNames[teamId];
-    updateGameUI();
-    
-    // 선수 성장 시스템 초기화
-    if (typeof playerGrowthSystem !== 'undefined') {
-        playerGrowthSystem.initializePlayerGrowth();
-    }
-    
-    // 이적 시장 초기화
-    if (typeof transferSystem !== 'undefined') {
-        transferSystem.initializeTransferMarket();
-    }
-    
-    // 메인 게임 화면으로 이동
-    showScreen('gameInterface');
-    showScreen('lobby');
-    
-    // 스쿼드 초기화
-    initializeSquad();
-    
-    // 다음 상대 설정
-    setNextOpponent();
+    initializeAllSystems(teamId);
 }
 
 // 화면 표시
