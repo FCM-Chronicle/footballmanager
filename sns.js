@@ -1,62 +1,92 @@
-// SNS 시스템(sns.js)
+// SNS 시스템
 class SNSSystem {
     constructor() {
-        this.news = {
-            "1부": [],
-            "2부": [],
-            "3부": []
+        this.newsFeed = [];
+        this.maxNews = 50; // 최대 50개 뉴스 유지
+        
+        // 이적 확정 기사 템플릿
+        this.transferConfirmedTemplates = [
+            "[오피셜] {playerName}, {transferFee}억에 {newTeam} 이적 확정!",
+            "[오피셜] {playerName}, {transferFee}억에 {newTeam} 합류!",
+            "[오피셜] {playerName}, **{newTeam}**과 계약! 새로운 도전 시작!",
+            "[오피셜] {playerName}, {transferFee}억으로 {newTeam} 이적 '충격'!",
+            "[오피셜] {playerName}, **{newTeam}**과 동행!",
+            "[오피셜] {playerName}, {transferFee}억에 {newTeam} 이적!",
+            "[오피셜] {playerName}, **{newTeam}**과 계약!",
+            "[오피셜] {playerName}, {transferFee}억에 {newTeam} 이적 '전격'!",
+            "[오피셜] {playerName}, **{newTeam}**으로 '유턴'!",
+            "[오피셜] {playerName}, {newTeam} 이적! '이변'의 주인공!",
+            "HERE WE GO! {playerName}, {newTeam} 이적 확정! by 파브리치오 로마노"
+        ];
+        
+        // 이적 루머 템플릿
+        this.transferRumorTemplates = [
+            "[이적 루머] {playerName}, {newTeam} 이적설 솔솔... {transferFee}억 거론",
+            "[이적설] {playerName}, {newTeam}으로 깜짝 이적하나?",
+            "[이적시장] {playerName}, {newTeam} 이적 임박?",
+            "[루머] {playerName}, {newTeam} '러브콜' 받았다!",
+            "[이적 가십] {playerName}, {newTeam} 이적 '가능성' 제기!"
+        ];
+        
+        // 경기 결과 템플릿
+        this.matchResultTemplates = {
+            shock: [
+                "[경기 결과] 충격! {winTeam}이 {loseTeam}을 {score}로 격파!",
+                "[경기 결과] 이변! {winTeam}, {loseTeam}을 {score}로 잡았다!",
+                "[경기 결과] 믿을 수 없는 패배! {loseTeam}, {winTeam}에 {score} 패!"
+            ],
+            expected: [
+                "[경기 결과] 예상대로! {winTeam}, {loseTeam}을 {score}로 완파!",
+                "[경기 결과] 압도적인 승리! {winTeam}, {loseTeam}에 {score} 승리!",
+                "[경기 결과] 순조로운 출발! {winTeam}, {loseTeam}에 {score} 승!"
+            ],
+            normal: [
+                "[경기 결과] {winTeam}, {loseTeam}에 {score} 승리!",
+                "[경기 결과] {winTeam}, {loseTeam} 꺾고 귀중한 승점 3점 획득!"
+            ],
+            draw: [
+                "[경기 결과] {team1}와 {team2}, {score} 무승부!",
+                "[경기 결과] 충격적인 무승부! {strongTeam}, {weakTeam}과 {score} 무승부!"
+            ]
         };
-        this.maxNewsPerLeague = 50;
+        
+        // 선수 강점 설명
+        this.playerStrengths = {
+            GK: ["안정적인 볼 키핑", "뛰어난 반사신경", "정확한 킥", "제공권 장악 능력", "훌륭한 위치 선정"],
+            DF: ["탁월한 수비력", "뛰어난 태클", "정확한 패스", "강력한 헤더", "안정적인 빌드업", "뛰어난 일대일 수비"],
+            MF: ["넓은 시야", "정확한 패스", "뛰어난 드리블", "경기 조율 능력", "엄청난 활동량", "창의적인 플레이"],
+            FW: ["뛰어난 득점력", "폭발적인 스피드", "정교한 마무리", "환상적인 드리블 돌파", "강력한 슈팅", "탁월한 오프더볼 움직임"]
+        };
     }
 
-    // 뉴스 생성 확률
-    shouldGenerateNews(type, league, isMyTeam = false) {
-        if (isMyTeam) return true; // 내 팀은 100%
+    // 이적 뉴스 추가
+    addTransferNews(player, newTeam, oldTeam, transferFee) {
+        const isRumor = Math.random() < 0.3; // 30% 확률로 루머
+        const templates = isRumor ? this.transferRumorTemplates : this.transferConfirmedTemplates;
+        const template = templates[Math.floor(Math.random() * templates.length)];
         
-        const probabilities = {
-            match: {
-                same: 0.8,   // 같은 리그
-                other: 0.3   // 다른 리그
-            },
-            transfer: 1.0,   // 이적은 100%
-            promotion: 1.0,  // 승강은 100%
-            rumor: 0.2      // 루머는 20%
-        };
+        const playerStrengths = this.playerStrengths[player.position];
+        const strength = playerStrengths[Math.floor(Math.random() * playerStrengths.length)];
         
-        const isCurrentLeague = league === gameData.currentLeague;
+        const newTeamName = teamNames[newTeam] || newTeam;
+        const oldTeamName = teamNames[oldTeam] || oldTeam;
         
-        switch (type) {
-            case 'match':
-                return Math.random() < (isCurrentLeague ? probabilities.match.same : probabilities.match.other);
-            case 'transfer':
-                return Math.random() < probabilities.transfer;
-            case 'promotion':
-                return Math.random() < probabilities.promotion;
-            case 'rumor':
-                return Math.random() < probabilities.rumor;
-            default:
-                return false;
+        let title = template
+            .replace(/{playerName}/g, player.name)
+            .replace(/{newTeam}/g, newTeamName)
+            .replace(/{transferFee}/g, transferFee);
+        
+        let content = '';
+        if (!isRumor) {
+            content = `${this.getCurrentDate()} – ${oldTeamName}의 ${player.age}세 ${player.name} (${player.position}) 선수가 ${transferFee}억에 달하는 금액으로 **${newTeamName}**으로 이적을 확정 지었습니다. ${player.name} 선수는 ${player.position}에 맞는 ${strength}을(를) 자랑합니다.`;
+        } else {
+            content = `구단 내부 소식통에 의하면, 최근 ${oldTeamName}의 ${player.age}세 ${player.name} (${player.position}) 선수가 ${transferFee}억에 달하는 금액으로 ${newTeamName}과 강하게 연결되고 있다고 합니다. ${player.name}은 ${player.position}에 맞는 ${strength}으로 ${newTeamName}의 관심을 받고 있습니다.`;
         }
-    }
-
-    // 승강 뉴스 생성
-    generatePromotionNews(team, league, newLeague, position) {
-        let title, content;
-
-        if (newLeague > league) { // 승격
-            title = `[승격 확정] 🎉 ${team}, ${this.getLeagueName(newLeague)} 승격 확정!`;
-            content = `${new Date().toLocaleDateString()} – ${team}이 시즌 ${position}위로 마감하며 ${this.getLeagueName(newLeague)} 승격을 확정지었습니다! 한 시즌 노력이 결실을 맺었습니다. 내년에는 더 높은 무대에서의 도전이 기다리고 있습니다.`;
-        } else { // 강등
-            title = `[강등 확정] 😢 ${team}, ${this.getLeagueName(newLeague)} 강등...`;
-            content = `${new Date().toLocaleDateString()} – ${team}이 시즌 ${position}위로 마감하며 아쉽게도 ${this.getLeagueName(newLeague)} 강등이 확정되었습니다. 한 시즌 동안 최선을 다했지만 결과가 따라주지 않았습니다. 내년에는 재도약을 위한 새로운 출발이 필요합니다.`;
-        }
-
-        const hashtags = newLeague > league ? 
-            [`#승격`, `#${team}`, `#${this.getLeagueName(league)}`] :
-            [`#강등`, `#${team}`, `#${this.getLeagueName(league)}`];
-
-        this.addNews(league, {
-            type: 'promotion',
+        
+        const hashtags = `#transfer #${oldTeam} #${newTeam} #${player.name.replace(' ', '')}`;
+        
+        this.addNews({
+            type: isRumor ? 'rumor' : 'transfer',
             title: title,
             content: content,
             hashtags: hashtags,
@@ -64,113 +94,64 @@ class SNSSystem {
         });
     }
 
-    // 뉴스 추가
-    addNews(league, newsItem) {
-        if (!this.news[league]) {
-            this.news[league] = [];
-        }
-
-        this.news[league].unshift(newsItem); // 최신 뉴스가 맨 위로
-
-        // 최대 뉴스 수 제한
-        if (this.news[league].length > this.maxNewsPerLeague) {
-            this.news[league] = this.news[league].slice(0, this.maxNewsPerLeague);
-        }
-    }
-
-    // 대이변 결과 판단
-    isUpsetResult(homeTeam, awayTeam, homeScore, awayScore) {
-        const homeRating = calculateTeamRating(homeTeam);
-        const awayRating = calculateTeamRating(awayTeam);
-        const ratingDiff = Math.abs(homeRating - awayRating);
-
-        // 10점 이상 차이나는 팀들의 경기에서 약팀이 이기면 대이변
-        if (ratingDiff >= 10) {
-            if (homeRating < awayRating && homeScore > awayScore) return true;
-            if (awayRating < homeRating && awayScore > homeScore) return true;
-        }
-
-        return false;
-    }
-
-    // 팀의 리그 찾기
-    getTeamLeague(teamName) {
-        for (const [league, data] of Object.entries(leagueData)) {
-            if (data.teams.some(team => team.name === teamName)) {
-                return league;
-            }
-        }
-        return '3부';
-    }
-
-    // 리그명 가져오기
-    getLeagueName(leagueKey) {
-        const names = {
-            '1부': '1부 리그',
-            '2부': '2부 리그', 
-            '3부': '3부 리그'
-        };
-        return names[leagueKey] || leagueKey;
-    }
-
-    // 뉴스 필터링
-    getFilteredNews(filter = 'all') {
-        if (filter === 'all') {
-            const allNews = [];
-            Object.values(this.news).forEach(leagueNews => {
-                allNews.push(...leagueNews);
-            });
-            return allNews.sort((a, b) => b.timestamp - a.timestamp);
-        } else {
-            return this.news[filter] || [];
-        }
-    }
-
-    // 경기 결과 뉴스 생성
-    generateMatchNews(homeTeam, awayTeam, homeScore, awayScore, league, homeGoalScorers = [], awayGoalScorers = []) {
-        if (!this.shouldGenerateNews('match', league, homeTeam === gameData.selectedTeam || awayTeam === gameData.selectedTeam)) {
-            return;
-        }
-
-        const isUpset = this.isUpsetResult(homeTeam, awayTeam, homeScore, awayScore);
-        let title, content;
+    // 경기 결과 뉴스 추가
+    addMatchResultNews(team1, team2, score1, score2, goalScorers) {
+        const team1Name = teamNames[team1] || team1;
+        const team2Name = teamNames[team2] || team2;
+        const scoreText = `${score1}-${score2}`;
         
-        if (homeScore > awayScore) {
-            if (isUpset) {
-                title = `[${league}] 🚨 대이변! ${homeTeam}이 ${awayTeam}을 ${homeScore}-${awayScore}로 격파!`;
-                content = `${new Date().toLocaleDateString()} – 예상을 뒤엎는 결과가 나왔습니다. ${homeTeam}이 강팀 ${awayTeam}을 상대로 놀라운 승리를 거두었습니다.`;
+        let templateCategory;
+        let winTeam, loseTeam;
+        
+        if (score1 !== score2) {
+            winTeam = score1 > score2 ? team1Name : team2Name;
+            loseTeam = score1 > score2 ? team2Name : team1Name;
+            
+            // 팀 강도 비교 (대략적)
+            const team1Strength = this.getTeamStrength(team1);
+            const team2Strength = this.getTeamStrength(team2);
+            const strengthDiff = Math.abs(team1Strength - team2Strength);
+            
+            if (strengthDiff > 10 && ((score1 > score2 && team1Strength < team2Strength) || (score2 > score1 && team2Strength < team1Strength))) {
+                templateCategory = 'shock'; // 이변
+            } else if (strengthDiff > 5 && ((score1 > score2 && team1Strength > team2Strength) || (score2 > score1 && team2Strength > team1Strength))) {
+                templateCategory = 'expected'; // 예상된 결과
             } else {
-                title = `[${league}] ⚽ ${homeTeam} ${homeScore}-${awayScore} ${awayTeam}`;
-                content = `${new Date().toLocaleDateString()} – ${homeTeam}이 홈에서 ${awayTeam}을 ${homeScore}-${awayScore}로 이겼습니다.`;
-            }
-        } else if (homeScore < awayScore) {
-            if (isUpset) {
-                title = `[${league}] ⚡ 이변! ${awayTeam}이 원정에서 ${homeTeam}을 ${awayScore}-${homeScore}로 잡았다!`;
-                content = `${new Date().toLocaleDateString()} – ${awayTeam}이 어려운 원정에서 ${homeTeam}을 상대로 값진 승리를 챙겼습니다.`;
-            } else {
-                title = `[${league}] ⚽ ${homeTeam} ${homeScore}-${awayScore} ${awayTeam}`;
-                content = `${new Date().toLocaleDateString()} – ${awayTeam}이 원정에서 ${homeTeam}을 ${awayScore}-${homeScore}로 이겼습니다.`;
+                templateCategory = 'normal'; // 일반적인 결과
             }
         } else {
-            title = `[${league}] ⚽ ${homeTeam} ${homeScore}-${awayScore} ${awayTeam} - 무승부`;
-            content = `${new Date().toLocaleDateString()} – ${homeTeam}과 ${awayTeam}이 ${homeScore}-${awayScore} 무승부를 기록했습니다.`;
+            templateCategory = 'draw'; // 무승부
         }
-
-        // 득점자 정보 추가
-        if (homeGoalScorers.length > 0 || awayGoalScorers.length > 0) {
-            content += "\n\n득점자: ";
-            if (homeGoalScorers.length > 0) {
-                content += `${homeTeam} - ${homeGoalScorers.join(', ')}`;
-            }
-            if (awayGoalScorers.length > 0) {
-                if (homeGoalScorers.length > 0) content += " / ";
-                content += `${awayTeam} - ${awayGoalScorers.join(', ')}`;
-            }
-        }
-
-        const hashtags = [`#${homeTeam}`, `#${awayTeam}`, `#${league}`];
         
-        this.addNews(league, {
+        const templates = this.matchResultTemplates[templateCategory];
+        const template = templates[Math.floor(Math.random() * templates.length)];
+        
+        let title = template;
+        let scorerInfo = '';
+        
+        if (goalScorers && goalScorers.length > 0) {
+            const mainScorer = goalScorers[0];
+            scorerInfo = ` ${mainScorer}이 득점했습니다.`;
+        }
+        
+        if (templateCategory === 'draw') {
+            title = title
+                .replace(/{team1}/g, team1Name)
+                .replace(/{team2}/g, team2Name)
+                .replace(/{score}/g, scoreText);
+        } else {
+            title = title
+                .replace(/{winTeam}/g, winTeam)
+                .replace(/{loseTeam}/g, loseTeam)
+                .replace(/{strongTeam}/g, team1Strength > team2Strength ? team1Name : team2Name)
+                .replace(/{weakTeam}/g, team1Strength < team2Strength ? team1Name : team2Name)
+                .replace(/{score}/g, scoreText);
+        }
+        
+        const content = title + scorerInfo;
+        const hashtags = `#${team1} #${team2} #matchresult`;
+        
+        this.addNews({
             type: 'match',
             title: title,
             content: content,
@@ -179,108 +160,102 @@ class SNSSystem {
         });
     }
 
-    // 이적 확정 뉴스 생성
-    generateTransferNews(player, price, type, fromTeam = null, toTeam = null) {
-        const templates = [
-            "[오피셜] {playerName}, {price}에 {toTeam} 이적 확정!",
-            "HERE WE GO! {playerName}, {toTeam} 이적 확정! by 파브리치오 로마노",
-            "[이적 확정] {playerName}, {fromTeam}에서 {toTeam}으로 이적",
-            "[공식 발표] {toTeam}, {playerName} 영입 완료",
-            "[Breaking] {playerName} → {toTeam} 이적 성사!",
-            "[Transfer] {playerName}의 새로운 도전, {toTeam}",
-            "[오피셜] {toTeam}, {playerName} 계약 완료",
-            "[이적] {playerName}, {price}에 {toTeam} 합류",
-            "[News] {playerName}, {toTeam}에서 새로운 시작",
-            "[Transfer] {fromTeam} → {toTeam}, {playerName} 이적",
-            "[공식] {playerName}, {toTeam} 유니폼 착용",
-            "[Welcome] {toTeam}, {playerName} 영입 발표"
-        ];
+    // 팀 강도 계산 (대략적)
+    getTeamStrength(teamKey) {
+        if (!teams[teamKey]) return 75;
+        
+        const teamPlayers = teams[teamKey];
+        const avgRating = teamPlayers.reduce((sum, player) => sum + player.rating, 0) / teamPlayers.length;
+        return Math.round(avgRating);
+    }
 
-        let title, content;
-        let targetTeam, targetLeague;
-
-        if (type === 'buy') {
-            targetTeam = gameData.selectedTeam;
-            targetLeague = gameData.currentLeague;
-            fromTeam = player.originalTeam || '이전 팀';
-            toTeam = gameData.selectedTeam;
-        } else {
-            targetTeam = fromTeam || '타팀';
-            targetLeague = this.getTeamLeague(targetTeam);
-            fromTeam = gameData.selectedTeam;
-            toTeam = '타팀';
+    // 뉴스 추가
+    addNews(newsItem) {
+        // 뉴스 앞쪽에 추가 (최신 뉴스가 위에 오도록)
+        this.newsFeed.unshift(newsItem);
+        
+        // 최대 개수 초과 시 오래된 뉴스 제거
+        if (this.newsFeed.length > this.maxNews) {
+            this.newsFeed = this.newsFeed.slice(0, this.maxNews);
         }
+        
+        console.log(`새 뉴스 추가: ${newsItem.title}`);
+    }
 
-        const template = templates[Math.floor(Math.random() * templates.length)];
-        title = template
-            .replace('{playerName}', player.name)
-            .replace('{price}', `${price}억원`)
-            .replace('{fromTeam}', fromTeam)
-            .replace('{toTeam}', toTeam);
+    // 현재 날짜 문자열 생성
+    getCurrentDate() {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        return `${year}.${month}.${day}`;
+    }
 
-        const contentTemplates = [
-            `${new Date().toLocaleDateString()} – ${fromTeam}의 ${player.age}세 ${player.name} (${player.position}) 선수가 ${price}억원에 달하는 금액으로 ${toTeam}으로 이적을 확정지었습니다. ${player.name} 선수는 ${player.position}에 맞는 뛰어난 실력을 자랑합니다.`,
-            `${new Date().toLocaleDateString()} – ${fromTeam}의 ${player.age}세 ${player.name} (${player.position}) 선수가 ${price}억원에 달하는 금액으로 ${toTeam} 이적을 확정지었습니다. 모든 계약 서류가 준비되었고, 메디컬 테스트도 완료되었습니다.`,
-            `${new Date().toLocaleDateString()} – ${toTeam}이 ${fromTeam}의 ${player.name} 선수 영입을 공식 발표했습니다. 이적료는 ${price}억원으로 알려졌습니다.`,
-            `${new Date().toLocaleDateString()} – ${player.name} 선수가 ${fromTeam}을 떠나 ${toTeam}에서 새로운 도전을 시작합니다. 이적료는 ${price}억원입니다.`
-        ];
+    // 시간 경과 표시 (상대적)
+    getTimeAgo(timestamp) {
+        const now = Date.now();
+        const diff = now - timestamp;
+        const minutes = Math.floor(diff / (1000 * 60));
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        
+        if (minutes < 1) return '방금 전';
+        if (minutes < 60) return `${minutes}분 전`;
+        if (hours < 24) return `${hours}시간 전`;
+        return `${days}일 전`;
+    }
 
-        content = contentTemplates[Math.floor(Math.random() * contentTemplates.length)];
-
-        const hashtags = [`#transfer`, `#${fromTeam}`, `#${toTeam}`, `#${player.name}`];
-
-        // 리그간 이적인 경우 특별 기사
-        if (this.getTeamLeague(fromTeam) !== this.getTeamLeague(toTeam)) {
-            title = `[리그간 이적] ⬆️ ${player.name}, ${this.getTeamLeague(fromTeam)} → ${this.getTeamLeague(toTeam)} 도전!`;
-            content = `${new Date().toLocaleDateString()} – ${this.getTeamLeague(fromTeam)} ${fromTeam}의 ${player.name}이 ${price}억원에 ${this.getTeamLeague(toTeam)} ${toTeam}으로 이적했습니다! 더 높은 무대에서의 도전을 선택한 ${player.name}의 활약이 기대됩니다.`;
-            hashtags.push('#리그간이적');
+    // 뉴스 피드 필터링
+    filterNews(type = 'all') {
+        if (type === 'all') {
+            return this.newsFeed;
         }
+        return this.newsFeed.filter(news => news.type === type);
+    }
 
-        this.addNews(targetLeague, {
-            type: 'transfer',
-            title: title,
-            content: content,
-            hashtags: hashtags,
+    // 게임 시작 환영 뉴스 추가
+    addWelcomeNews() {
+        this.addNews({
+            type: 'announcement',
+            title: '새로운 감독 임명!',
+            content: `${teamNames[gameData.selectedTeam]}의 새로운 감독이 임명되었습니다. 팬들의 기대가 높아지고 있습니다.`,
+            hashtags: `#${gameData.selectedTeam} #newmanager`,
             timestamp: Date.now()
         });
     }
 
-    // 이적 루머 뉴스 생성
+    // 선수 이적 루머 생성 (가끔)
     generateTransferRumor() {
-        if (!this.shouldGenerateNews('rumor', gameData.currentLeague)) {
-            return;
-        }
-
-        const rumorTemplates = [
-            "[이적 루머] {playerName}, {toTeam} 이적설 솔솔... {price} 거론",
-            "[Rumor] {playerName} → {toTeam} 이적 가능성 제기",
-            "[소식통] {playerName}, {toTeam}과 접촉설",
-            "[루머] {toTeam}, {playerName} 영입 관심",
-            "[Transfer Rumor] {playerName}, {toTeam} 이적 논의 중?"
-        ];
-
-        // 랜덤 선수와 팀 선택
-        const allPlayers = Object.values(playerDatabase).flat();
-        const randomPlayer = allPlayers[Math.floor(Math.random() * allPlayers.length)];
-        const allTeams = Object.values(leagueData).flat().map(data => data.teams).flat();
-        const randomTeam = allTeams[Math.floor(Math.random() * allTeams.length)];
+        if (Math.random() > 0.1) return; // 10% 확률로만 실행
         
-        const estimatedPrice = transferSystem ? transferSystem.calculatePlayerPrice({
-            ...randomPlayer,
-            currentLeague: this.getTeamLeague(randomTeam.name)
-        }) : Math.floor(Math.random() * 500) + 50;
-
-        const template = rumorTemplates[Math.floor(Math.random() * rumorTemplates.length)];
+        // 이적시장에 있는 선수 중 하나를 선택
+        if (transferSystem.transferMarket.length === 0) return;
+        
+        const randomPlayer = transferSystem.transferMarket[
+            Math.floor(Math.random() * transferSystem.transferMarket.length)
+        ];
+        
+        // 랜덤한 관심 팀 선택
+        const allTeams = Object.keys(teamNames);
+        const interestedTeam = allTeams[Math.floor(Math.random() * allTeams.length)];
+        
+        const template = this.transferRumorTemplates[Math.floor(Math.random() * this.transferRumorTemplates.length)];
+        const playerStrengths = this.playerStrengths[randomPlayer.position];
+        const strength = playerStrengths[Math.floor(Math.random() * playerStrengths.length)];
+        
         const title = template
-            .replace('{playerName}', randomPlayer.name)
-            .replace('{toTeam}', randomTeam.name)
-            .replace('{price}', `${estimatedPrice}억원`);
-
-        const content = `구단 내부 소식통에 의하면, 최근 ${randomPlayer.name} (${randomPlayer.position}) 선수가 ${estimatedPrice}억원에 달하는 금액으로 ${randomTeam.name}과 강하게 연결되고 있다고 합니다.`;
-
-        const hashtags = [`#루머`, `#${randomPlayer.name}`, `#${randomTeam.name}`];
-
-        this.addNews(gameData.currentLeague, {
+            .replace(/{playerName}/g, randomPlayer.name)
+            .replace(/{newTeam}/g, teamNames[interestedTeam])
+            .replace(/{transferFee}/g, randomPlayer.price);
+        
+        const oldTeamName = randomPlayer.originalTeam === "외부리그" ? 
+            "외부리그" : (teamNames[randomPlayer.originalTeam] || randomPlayer.originalTeam);
+        
+        const content = `구단 내부 소식통에 의하면, 최근 ${oldTeamName}의 ${randomPlayer.age}세 ${randomPlayer.name} (${randomPlayer.position}) 선수가 ${randomPlayer.price}억에 달하는 금액으로 ${teamNames[interestedTeam]}과 강하게 연결되고 있다고 합니다. ${randomPlayer.name}은 ${randomPlayer.position}에 맞는 ${strength}으로 ${teamNames[interestedTeam]}의 관심을 받고 있습니다.`;
+        
+        const hashtags = `#${randomPlayer.name.replace(' ', '')} #${interestedTeam} #transferrumor`;
+        
+        this.addNews({
             type: 'rumor',
             title: title,
             content: content,
@@ -289,68 +264,155 @@ class SNSSystem {
         });
     }
 
-    // SNS 시스템 초기화
-    initialize() {
-        // 초기 루머 뉴스 몇 개 생성
-        for (let i = 0; i < 3; i++) {
-            this.generateTransferRumor();
+    // 시즌 관련 뉴스 생성
+    addSeasonNews(type, teamData) {
+        let title, content;
+        
+        switch(type) {
+            case 'championship':
+                title = `🏆 ${teamNames[gameData.selectedTeam]} 우승 확정!`;
+                content = `${teamNames[gameData.selectedTeam]}이 시즌 우승을 확정지었습니다. 팬들의 환호가 경기장을 가득 메웠습니다.`;
+                break;
+            case 'topFour':
+                title = `✨ ${teamNames[gameData.selectedTeam]} 상위권 진출!`;
+                content = `${teamNames[gameData.selectedTeam]}이 상위권 진출에 성공했습니다. 훌륭한 시즌을 보냈습니다.`;
+                break;
+            case 'relegation':
+                title = `⚠️ ${teamNames[gameData.selectedTeam]} 강등권 위기`;
+                content = `${teamNames[gameData.selectedTeam]}이 강등권에 머물고 있습니다. 남은 경기에서의 분발이 필요합니다.`;
+                break;
+        }
+        
+        if (title && content) {
+            this.addNews({
+                type: 'announcement',
+                title: title,
+                content: content,
+                hashtags: `#${gameData.selectedTeam} #season`,
+                timestamp: Date.now()
+            });
+        }
+    }
+
+    // 저장 데이터 준비
+    getSaveData() {
+        return {
+            newsFeed: this.newsFeed
+        };
+    }
+
+    // 저장 데이터 로드
+    loadSaveData(saveData) {
+        if (saveData && saveData.newsFeed) {
+            this.newsFeed = saveData.newsFeed;
         }
     }
 }
 
-// SNS 시스템 인스턴스 생성
+// 전역 SNS 시스템 인스턴스
 const snsSystem = new SNSSystem();
 
-// SNS 초기화
-function initializeSNS() {
-    snsSystem.initialize();
-}
-
-// SNS 표시
-function displaySNS() {
-    const currentFilter = document.querySelector('.sns-filter.active')?.dataset.filter || 'all';
+// SNS 뉴스 피드 표시
+function displayNewsFeed(filter = 'all') {
     const newsFeed = document.getElementById('newsFeed');
-    const news = snsSystem.getFilteredNews(currentFilter);
-
-    newsFeed.innerHTML = '';
-
-    if (news.length === 0) {
-        newsFeed.innerHTML = '<div style="text-align: center; color: #666; padding: 2rem;">뉴스가 없습니다.</div>';
-        return;
-    }
-
-    news.forEach(newsItem => {
-        const newsCard = document.createElement('div');
-        newsCard.className = 'news-card';
-
-        const date = new Date(newsItem.timestamp).toLocaleDateString('ko-KR');
-        const time = new Date(newsItem.timestamp).toLocaleTimeString('ko-KR', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
-        });
-
-        newsCard.innerHTML = `
-            <div class="news-header">
-                <div class="news-title">${newsItem.title}</div>
-                <div class="news-date">${date} ${time}</div>
-            </div>
-            <div class="news-content">${newsItem.content}</div>
-            <div class="news-hashtags">
-                ${newsItem.hashtags.map(tag => `<span class="hashtag">${tag}</span>`).join('')}
+    if (!newsFeed) return;
+    
+    const filteredNews = snsSystem.filterNews(filter);
+    
+    if (filteredNews.length === 0) {
+        newsFeed.innerHTML = `
+            <div class="news-item">
+                <div class="news-content">
+                    <h4>아직 뉴스가 없습니다</h4>
+                    <p>경기를 진행하고 이적을 하면서 다양한 뉴스를 확인해보세요!</p>
+                    <div class="news-time">지금</div>
+                </div>
             </div>
         `;
-
+        return;
+    }
+    
+    newsFeed.innerHTML = '';
+    
+    filteredNews.forEach(news => {
+        const newsCard = document.createElement('div');
+        newsCard.className = `news-item ${news.type}`;
+        
+        newsCard.innerHTML = `
+            <div class="news-content">
+                <h4 class="news-title">${news.title}</h4>
+                <p class="news-text">${news.content}</p>
+                <div class="news-hashtags">${news.hashtags}</div>
+                <div class="news-time">${snsSystem.getTimeAgo(news.timestamp)}</div>
+            </div>
+        `;
+        
         newsFeed.appendChild(newsCard);
     });
 }
 
-// SNS 필터 이벤트 리스너
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.sns-filter').forEach(filter => {
-        filter.addEventListener('click', () => {
-            document.querySelectorAll('.sns-filter').forEach(f => f.classList.remove('active'));
-            filter.classList.add('active');
-            displaySNS();
+// SNS 필터 설정
+function setSNSFilter(filter) {
+    const filterBtns = document.querySelectorAll('#sns .filter-btn');
+    filterBtns.forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-filter') === filter) {
+            btn.classList.add('active');
+        }
+    });
+    
+    displayNewsFeed(filter);
+}
+
+// 경기 후 SNS 업데이트
+function updateSNSAfterMatch(homeTeam, awayTeam, homeScore, awayScore, goalScorers) {
+    // 내 팀 경기는 무조건 뉴스 생성
+    if (homeTeam === gameData.selectedTeam || awayTeam === gameData.selectedTeam) {
+        snsSystem.addMatchResultNews(homeTeam, awayTeam, homeScore, awayScore, goalScorers);
+    } 
+    // 다른 팀 경기는 가끔 뉴스 생성
+    else if (Math.random() < 0.3) {
+        snsSystem.addMatchResultNews(homeTeam, awayTeam, homeScore, awayScore, goalScorers);
+    }
+    
+    // 이적 루머 생성
+    snsSystem.generateTransferRumor();
+}
+
+// 팀 선택 후 환영 뉴스
+function addWelcomeNews() {
+    snsSystem.addWelcomeNews();
+}
+
+// SNS 이벤트 리스너 설정
+function setupSNSEventListeners() {
+    const snsFilterBtns = document.querySelectorAll('#sns .filter-btn');
+    snsFilterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const filter = btn.getAttribute('data-filter');
+            setSNSFilter(filter);
         });
     });
-});
+}
+
+// 시즌별 SNS 뉴스
+function addSeasonEndNews() {
+    const finalPosition = calculateFinalPosition();
+    
+    if (finalPosition === 1) {
+        snsSystem.addSeasonNews('championship');
+    } else if (finalPosition <= 4) {
+        snsSystem.addSeasonNews('topFour');
+    } else if (finalPosition >= 15) {
+        snsSystem.addSeasonNews('relegation');
+    }
+}
+
+// 전역 함수로 노출
+window.snsSystem = snsSystem;
+window.displayNewsFeed = displayNewsFeed;
+window.setSNSFilter = setSNSFilter;
+window.updateSNSAfterMatch = updateSNSAfterMatch;
+window.addWelcomeNews = addWelcomeNews;
+window.setupSNSEventListeners = setupSNSEventListeners;
+window.addSeasonEndNews = addSeasonEndNews;
