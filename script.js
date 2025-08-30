@@ -1,22 +1,4 @@
-// 전역 함수들을 window 객체에 노출
-window.selectTeam = selectTeam;
-window.updateUI = updateUI;
-window.setupFormation = setupFormation;
-window.showPlayerSelection = showPlayerSelection;
-window.placePlayer = placePlayer;
-window.removePlayerFromFormation = removePlayerFromFormation;
-window.updateFormationDisplay = updateFormationDisplay;
-window.showNotification = showNotification;
-window.switchTab = switchTab;
-window.startMatch = startMatch;
-window.startMatchFromEngine = startMatchFromEngine;
-window.simulateMatchMinute = simulateMatchMinute;
-window.signSponsor = signSponsor;
-window.generateNews = generateNews;
-window.buyPlayer = buyPlayer;
-window.loadTransferMarket = loadTransferMarket;
-window.displayTransferPlayers = displayTransferPlayers;
-window.calculatePlayerPrice = calculatePlayerPrice;// 전역 변수
+// 전역 변수
 let gameState = {
     selectedTeam: null,
     selectedTeamData: null,
@@ -2291,3 +2273,23 @@ function updateLeagueTableAfterMatch(result, myScore, opponentScore, opponentNam
 function generateNews() {}
 
 console.log("Football Manager Game initialized!");
+
+/ 전역 함수들을 window 객체에 노출
+window.selectTeam = selectTeam;
+window.updateUI = updateUI;
+window.setupFormation = setupFormation;
+window.showPlayerSelection = showPlayerSelection;
+window.placePlayer = placePlayer;
+window.removePlayerFromFormation = removePlayerFromFormation;
+window.updateFormationDisplay = updateFormationDisplay;
+window.showNotification = showNotification;
+window.switchTab = switchTab;
+window.startMatch = startMatch;
+window.startMatchFromEngine = startMatchFromEngine;
+window.simulateMatchMinute = simulateMatchMinute;
+window.signSponsor = signSponsor;
+window.generateNews = generateNews;
+window.buyPlayer = buyPlayer;
+window.loadTransferMarket = loadTransferMarket;
+window.displayTransferPlayers = displayTransferPlayers;
+window.calculatePlayerPrice = calculatePlayerPrice;
