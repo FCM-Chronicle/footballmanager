@@ -50,12 +50,9 @@ function processPlayerGrowth() {
                         oldRating: oldRating,
                         newRating: player.rating,
                         growth: player.rating - oldRating
-                    
-    // 잠재력 순으로 정렬
-    prospects.sort((a, b) => b.potential - a.potential);
-    
-    return prospects;
-}
+                     });
+                    }
+   
 
 function checkPlayerMilestones(player) {
     // 특정 능력치 도달시 마일스톤 체크
@@ -336,3 +333,9 @@ function getTopYoungProspects() {
             }
         }
     });
+
+     // 잠재력 순으로 정렬
+    prospects.sort((a, b) => b.potential - a.potential);
+    
+    return prospects;
+}
