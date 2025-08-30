@@ -1,4 +1,22 @@
-// 전역 변수
+// 전역 함수들을 window 객체에 노출
+window.selectTeam = selectTeam;
+window.updateUI = updateUI;
+window.setupFormation = setupFormation;
+window.showPlayerSelection = showPlayerSelection;
+window.placePlayer = placePlayer;
+window.removePlayerFromFormation = removePlayerFromFormation;
+window.updateFormationDisplay = updateFormationDisplay;
+window.showNotification = showNotification;
+window.switchTab = switchTab;
+window.startMatch = startMatch;
+window.startMatchFromEngine = startMatchFromEngine;
+window.simulateMatchMinute = simulateMatchMinute;
+window.signSponsor = signSponsor;
+window.generateNews = generateNews;
+window.buyPlayer = buyPlayer;
+window.loadTransferMarket = loadTransferMarket;
+window.displayTransferPlayers = displayTransferPlayers;
+window.calculatePlayerPrice = calculatePlayerPrice;// 전역 변수
 let gameState = {
     selectedTeam: null,
     selectedTeamData: null,
@@ -39,7 +57,8 @@ let gameState = {
         losses: 0
     }
 };
-// 팀 데이터 (일부만 표시, 실제로는 더 많음)
+
+// 팀 데이터 
 const superLeagueTeams = {
     // 1부 리그
     "바르셀로나": {
@@ -1492,7 +1511,7 @@ const leagueTeams = {
     3: ["FC 서울", "갈라타사라이", "알 힐랄", "알 이티하드", "알 나스르", "아르헨티나 연합", "미국 연합", "멕시코 연합", "브라질 연합", "전북 현대", "울산 현대", "포항 스틸러스", "광주 FC", "리옹"]
 };
 
-/ DOM 로드 후 실행
+// DOM 로드 후 실행
 document.addEventListener('DOMContentLoaded', function() {
     initializeGame();
     setupEventListeners();
@@ -1969,28 +1988,183 @@ function startMatch() {
         return;
     }
     
-    // matchEngine.js의 함수 호출
-    if (typeof window.startMatch === 'function') {
-        window.startMatch();
+    // matchEngine.js가 로드되었는지 확인하고 실제 함수 사용
+    if (typeof window.startMatch !== 'undefined' && window.startMatch !== startMatch) {
+        // matchEngine.js의 startMatch 함수 직접 실행
+        startMatchFromEngine();
     } else {
-        // 간단한 경기 시뮬레이션 대체
         simulateSimpleMatch();
     }
 }
 
-function simulateSimpleMatch() {
+function startMatchFromEngine() {
+    if (!gameState.selectedTeam) return;
+    
+    // matchEngine.js의 로직을 여기에 직접 구현
     const currentLeague = gameState.leagueTables[gameState.league];
     const opponents = currentLeague.filter(team => team.name !== gameState.selectedTeam);
     const opponent = opponents[Math.floor(Math.random() * opponents.length)];
     
-    const myScore = Math.floor(Math.random() * 4);
-    const opponentScore = Math.floor(Math.random() * 4);
+    // matchState 초기화 (matchEngine.js 스타일)
+    const matchState = {
+        isActive: false,
+        currentMinute: 0,
+        homeTeam: gameState.selectedTeam,
+        awayTeam: opponent.name,
+        homeScore: 0,
+        awayScore: 0,
+        events: [],
+        matchInterval: null
+    };
     
+    // UI 업데이트
+    document.getElementById('nextMatchInfo').style.display = 'none';
+    document.getElementById('startMatchBtn').style.display = 'none';
+    document.getElementById('matchSimulation').classList.add('active');
+    
+    // 경기 헤더 업데이트
+    document.getElementById('matchTeams').textContent = `${matchState.homeTeam} vs ${matchState.awayTeam}`;
+    document.getElementById('matchTime').textContent = `0분`;
+    document.getElementById('matchScore').textContent = `0 - 0`;
+    
+    // 이벤트 컨테이너 초기화
+    document.getElementById('matchEvents').innerHTML = '';
+    
+    // 경기 시작
+    matchState.isActive = true;
+    matchState.matchInterval = setInterval(() => {
+        simulateMatchMinute(matchState);
+    }, 1000);
+}
+
+function simulateMatchMinute(matchState) {
+    matchState.currentMinute++;
+    
+    // 경기 이벤트 발생 확률 계산
+    const rand = Math.random() * 100;
+    
+    // 골 (기본 5%)
+    if (rand < 5) {
+        simulateGoalEvent(matchState);
+    }
+    // 패스 (80%)
+    else if (rand < 85) {
+        addMatchEvent(matchState, "안정적인 패스 플레이가 이어집니다.", 'pass');
+    }
+    // 파울 (5%)
+    else if (rand < 90) {
+        addMatchEvent(matchState, "파울이 선언되었습니다.", 'foul');
+    }
+    // 스로인 (4%)
+    else if (rand < 94) {
+        addMatchEvent(matchState, "터치라인 밖으로 나가 스로인입니다.", 'throwin');
+    }
+    // 골킥 (3%)
+    else if (rand < 97) {
+        addMatchEvent(matchState, "골키퍼가 골킥을 준비합니다.", 'goalkick');
+    }
+    // 코너킥 (3%)
+    else if (rand < 100) {
+        addMatchEvent(matchState, "코너킥이 주어집니다!", 'corner');
+    }
+    
+    updateMatchUI(matchState);
+    
+    // 90분 종료
+    if (matchState.currentMinute >= 90) {
+        endMatch(matchState);
+    }
+}
+
+function simulateGoalEvent(matchState) {
+    const isHomeGoal = Math.random() < 0.5; // 50% 확률로 홈/어웨이 골
+    
+    if (isHomeGoal) {
+        matchState.homeScore++;
+        simulateMyTeamGoal(matchState);
+    } else {
+        matchState.awayScore++;
+        addMatchEvent(matchState, `${matchState.awayTeam}이 골을 넣었습니다!`, 'goal');
+    }
+}
+
+function simulateMyTeamGoal(matchState) {
+    const players = gameState.selectedTeamData.players;
+    
+    // 포지션별 골 확률
+    const goalProbabilities = {
+        'FW': 70,
+        'MF': 20,
+        'DF': 10,
+        'GK': 0
+    };
+    
+    // 가중치를 고려한 득점자 선택
+    const eligiblePlayers = players.filter(p => goalProbabilities[p.position] > 0);
+    const scorer = selectPlayerByPosition(eligiblePlayers, goalProbabilities);
+    
+    // 어시스트 (80% 확률)
+    let assist = null;
+    if (Math.random() < 0.8) {
+        const assistPlayers = players.filter(p => p !== scorer && p.position !== 'GK');
+        assist = assistPlayers[Math.floor(Math.random() * assistPlayers.length)];
+    }
+    
+    let goalText = `골! ${scorer.name}의 환상적인 골!`;
+    if (assist) {
+        goalText += ` ${assist.name}이 어시스트를 기록했습니다!`;
+    }
+    
+    addMatchEvent(matchState, goalText, 'goal');
+}
+
+function selectPlayerByPosition(players, probabilities) {
+    const weightedPlayers = [];
+    
+    players.forEach(player => {
+        const weight = probabilities[player.position] || 0;
+        for (let i = 0; i < weight; i++) {
+            weightedPlayers.push(player);
+        }
+    });
+    
+    return weightedPlayers[Math.floor(Math.random() * weightedPlayers.length)];
+}
+
+function addMatchEvent(matchState, text, type) {
+    const event = {
+        minute: matchState.currentMinute,
+        text: text,
+        type: type
+    };
+    
+    matchState.events.push(event);
+    
+    const eventsContainer = document.getElementById('matchEvents');
+    const eventDiv = document.createElement('div');
+    eventDiv.className = `match-event ${type === 'goal' ? 'goal-event' : ''}`;
+    eventDiv.innerHTML = `<strong>${matchState.currentMinute}'</strong> ${text}`;
+    
+    eventsContainer.appendChild(eventDiv);
+    eventsContainer.scrollTop = eventsContainer.scrollHeight;
+}
+
+function updateMatchUI(matchState) {
+    document.getElementById('matchTeams').textContent = `${matchState.homeTeam} vs ${matchState.awayTeam}`;
+    document.getElementById('matchTime').textContent = `${matchState.currentMinute}분`;
+    document.getElementById('matchScore').textContent = `${matchState.homeScore} - ${matchState.awayScore}`;
+}
+
+function endMatch(matchState) {
+    clearInterval(matchState.matchInterval);
+    matchState.isActive = false;
+    
+    // 경기 결과 처리
     let result;
-    if (myScore > opponentScore) {
+    if (matchState.homeScore > matchState.awayScore) {
         result = 'win';
         gameState.statistics.wins++;
-    } else if (myScore < opponentScore) {
+    } else if (matchState.homeScore < matchState.awayScore) {
         result = 'loss';
         gameState.statistics.losses++;
     } else {
@@ -1998,15 +2172,80 @@ function simulateSimpleMatch() {
         gameState.statistics.draws++;
     }
     
+    updateLeagueTableAfterMatch(result, matchState.homeScore, matchState.awayScore, matchState.awayTeam);
+    
+    addMatchEvent(matchState, "경기 종료!", 'end');
+    
+    // 인터뷰 표시
+    setTimeout(() => {
+        showPostMatchInterview(result);
+    }, 2000);
+}
+
+function showPostMatchInterview(result) {
+    const interview = document.getElementById('postMatchInterview');
+    const options = document.getElementById('interviewOptions');
+    
+    let interviewOptions = [];
+    
+    switch(result) {
+        case 'win':
+            interviewOptions = [
+                { text: "정말 훌륭한 경기였습니다! 여러분이 자랑스럽습니다!", effect: 10 },
+                { text: "팀워크가 빛났습니다! 계속 이렇게 해봅시다!", effect: 5 },
+                { text: "몇몇 실수는 아쉬웠습니다. 다음에는 더 집중해야 합니다.", effect: -5 }
+            ];
+            break;
+        case 'loss':
+            interviewOptions = [
+                { text: "이번 경기는 정말 실망스러웠습니다. 왜 이렇게 했는지 이해가 되지 않습니다!", effect: -10 },
+                { text: "이런 경기는 절대 허용할 수 없습니다. 다음에는 더 잘해야 합니다!", effect: -5 },
+                { text: "힘든 경기를 치렀지만, 여러분의 노력은 인정합니다. 다음에 더 좋은 결과를 기대합니다.", effect: 5 }
+            ];
+            break;
+        case 'draw':
+            interviewOptions = [
+                { text: "아쉬운 결과지만, 다음 경기를 위해 더 열심히 준비하겠습니다.", effect: 0 },
+                { text: "1점이라도 더 중요합니다. 선수들이 최선을 다했습니다.", effect: 3 },
+                { text: "우리는 더 잘할 수 있었습니다. 실망스러운 결과입니다.", effect: -3 }
+            ];
+            break;
+    }
+    
+    options.innerHTML = '';
+    interviewOptions.forEach((option, index) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'interview-option';
+        optionDiv.innerHTML = `
+            ${option.text}
+            <span class="interview-effect ${option.effect < 0 ? 'negative' : ''}">(사기 ${option.effect > 0 ? '+' : ''}${option.effect})</span>
+        `;
+        optionDiv.addEventListener('click', () => selectInterviewOption(option.effect));
+        options.appendChild(optionDiv);
+    });
+    
+    interview.classList.add('active');
+}
+
+function selectInterviewOption(moraleChange) {
+    gameState.morale += moraleChange;
+    gameState.morale = Math.max(1, Math.min(100, gameState.morale)); // 1-100 범위 제한
+    
+    updateUI();
+    document.getElementById('postMatchInterview').classList.remove('active');
+    
+    // UI 리셋
+    document.getElementById('matchSimulation').classList.remove('active');
+    document.getElementById('nextMatchInfo').style.display = 'block';
+    document.getElementById('startMatchBtn').style.display = 'block';
+    document.getElementById('matchEvents').innerHTML = '';
+    
     // 리그 테이블 업데이트
-    updateLeagueTableAfterMatch(result, myScore, opponentScore, opponent.name);
-    
-    showNotification(`경기 결과: ${gameState.selectedTeam} ${myScore} - ${opponentScore} ${opponent.name}`);
-    
-    // 리그 테이블 다시 로드
     if (document.getElementById('league-tab').classList.contains('active')) {
         loadLeagueTable();
     }
+    
+    showNotification("경기가 끝났습니다!");
 }
 
 function updateLeagueTableAfterMatch(result, myScore, opponentScore, opponentName) {
