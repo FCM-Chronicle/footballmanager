@@ -1485,7 +1485,7 @@ const superLeagueTeams = {
         ],
         description: "프랑스 축구의 명문 리옹의 영광 재건을 위한 도전"
     }
-};
+    };
 
 // 리그별 팀 목록
 const leagueTeams = {
